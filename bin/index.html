@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="X-UA-Compatible" content="IE=10, chrome=1" />
+		
+    <!-- 1. Load platform.js for polyfill support. -->
+    <script src="lib/bower_components/platform/platform.js"></script>
+    <script src="lib/bower_components/momentjs/min/moment.min.js"></script>
+    <!-- <script src="lib/polymer-ajax.js"></script> -->
+
+    <!-- 2. Use an HTML Import to bring in the element. -->
+    <link rel="import"
+      href="lib/bower_components/polymer-ajax/polymer-ajax.html">
+					
+		<link rel="import"
+      href="lib/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
+		
+		<link rel="import"
+      href="lib/elements/my-element.html">
+			
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="lib/bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="lib/bower_components/bootstrap/dist/css/bootstrap-theme.min.css"/>
+		
+		<link rel="stylesheet" href="css/common.min.css" shim-shadowdom />
+  </head>
+  <body>		
+		<!-- 3. Declare the element. Configure using its attributes. -->
+		<polymer-ajax id="ajaxTest"
+			url="data/bower.cfm" handleAs="json"
+			on-polymer-response="{{onPolymerResponse}}">
+		</polymer-ajax>
+			
+		<div class="container">
+			<button id="bnDownloadJson" type="button" class="btn btn-default">
+				<span class="glyphicon glyphicon-download"></span> Download json
+			</button>
+			
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h3 class="panel-title">Polymer-Ajax results when file is loaded successfully</h3>
+				</div>
+				
+				<div class="panel-body">
+					<!--<div class="alert alert-danger" role="alert">!! if you see this text then the polymer-ajax test failed :( !!</div>-->
+					<div id="ajaxTestResponse" class="dynamic_result"></div>
+				</div>
+			</div>
+			
+			<hr/>
+			
+			<div class="well">
+				<polymer-ui-accordion selected="0" class="row">
+					<polymer-ui-collapsible>
+						<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 1</button></div>
+						<my-element id="test33" class="active" declarativeMessage="test33"></my-element>
+					</polymer-ui-collapsible>
+					
+					<polymer-ui-collapsible>
+						<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 2</button></div>
+						<my-element id="test34" class="active" declarativeMessage="test34"></my-element>
+					</polymer-ui-collapsible>
+					
+					<polymer-ui-collapsible>
+						<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 3</button></div>
+						<my-element id="test35" class="active" declarativeMessage="test35"></my-element>
+					</polymer-ui-collapsible>
+				</polymer-ui-accordion>
+			</div>
+			
+			<hr/>
+			
+			<form>
+				<h2>Nested form test</h2>
+				<my-element id="test36" class="active" declarativeMessage="test36"></my-element>
+			</form>
+		</div>
+		
+		<script src="lib/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="lib/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		
+		<script type="text/javascript" src="lib/polymerTest.js"></script>
+  </body>
+</html>

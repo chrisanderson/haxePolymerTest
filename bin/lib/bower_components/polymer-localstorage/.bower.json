@@ -1,0 +1,18 @@
+{
+  "name": "polymer-localstorage",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#0.2.4"
+  },
+  "version": "0.2.4",
+  "homepage": "https://github.com/Polymer/polymer-localstorage",
+  "_release": "0.2.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.4",
+    "commit": "a347bc138e596e666018cecc8d52c422fb157c04"
+  },
+  "_source": "git://github.com/Polymer/polymer-localstorage.git",
+  "_target": "0.2.4",
+  "_originalSource": "Polymer/polymer-localstorage"
+}

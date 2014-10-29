@@ -1,0 +1,24 @@
+#js target (can add other build targets)
+
+#declaring what folder is my source
+-cp src
+
+#declaring what libs i'd like to use
+-lib jQueryExtern
+-lib mmvc
+
+#declaring my apps main entry (i tend to name it Main, but that's not mandatory)
+-main Main
+
+#dce = dead code elimination
+#dce options = no std full
+-dce std
+
+#flags
+#-D bindx_compatibility
+#-D noEmbedJS
+#--display
+--times
+
+#--help-defines
+-version

@@ -1,0 +1,17 @@
+{
+  "name": "polymerTest",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.2.3",
+    "polymer-ajax": "Polymer/polymer-ajax#~0.2.3",
+    "polymer-list": "Polymer/polymer-list#~0.2.3",
+    "momentjs": "~2.6.0"
+  },
+  "resolutions": {
+    "polymer": "master",
+    "core-component-page": "master",
+    "platform": "master"
+  }
+}

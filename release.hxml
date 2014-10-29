@@ -1,0 +1,6 @@
+common.hxml
+
+-js bin/release/polymerTest.js
+--no-traces
+
+-cmd copy "bin\release\polymerTest.js" "bin\lib\polymerTest.js"
