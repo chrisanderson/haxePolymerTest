@@ -2,86 +2,158 @@
 <html>
   <head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta http-equiv="X-UA-Compatible" content="IE=10, chrome=1" />
+		<meta http-equiv="X-UA-Compatible" content="IE=10, IE=11, chrome=1">
 		
     <!-- 1. Load platform.js for polyfill support. -->
-    <script src="lib/bower_components/platform/platform.js"></script>
-    <script src="lib/bower_components/momentjs/min/moment.min.js"></script>
-    <!-- <script src="lib/polymer-ajax.js"></script> -->
+    <script src="lib/bower_components/webcomponentsjs/webcomponents.js"></script>
+		<!-- kendo relies on jquery -->
+    <script src="lib/jquery/jquery-2.1.3.min.js"></script>
+    <script src="lib/kendoui/kendo.web.js"></script>
 
     <!-- 2. Use an HTML Import to bring in the element. -->
-    <link rel="import"
-      href="lib/bower_components/polymer-ajax/polymer-ajax.html">
-					
-		<link rel="import"
-      href="lib/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
-		
-		<link rel="import"
-      href="lib/elements/my-element.html">
-			
-		<!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="lib/bower_components/bootstrap/dist/css/bootstrap.min.css">
-
-		<!-- Optional theme -->
-		<link rel="stylesheet" href="lib/bower_components/bootstrap/dist/css/bootstrap-theme.min.css"/>
+		<link rel="import" href="lib/bower_components/paper-button/paper-button.html">
+		<link rel="import" href="lib/bower_components/paper-shadow/paper-shadow.html">
+		<link rel="import" href="lib/bower_components/paper-ripple/paper-ripple.html">
+		<link rel="import" href="lib/bower_components/core-a11y-keys/core-a11y-keys.html">
+		<link rel="import" href="lib/bower_components/core-focusable/core-focusable.html">
+		<link rel="import" href="lib/bower_components/core-icon-button/core-icon-button.html">
+		<link rel="import" href="lib/bower_components/core-toolbar/core-toolbar.html">
+		<link rel="import" href="lib/bower_components/core-header-panel/core-header-panel.html">
+		<link rel="import" href="lib/bower_components/core-media-query/core-media-query.html">
+		<link rel="import" href="lib/bower_components/polymer-filters/polymer-filters.html">
+		<link rel="import" href="lib/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
+		<link rel="import" href="lib/bower_components/aha-table/dist/aha-table.html">
+		<link rel="import" href="lib/elements/app-element.html">
+		<link rel="import" href="lib/elements/ajax-test.html">
+		<link rel="import" href="lib/elements/my-element.html">
+		<link rel="import" href="lib/elements/grid-wrapper.html">
 		
 		<link rel="stylesheet" href="css/common.min.css" shim-shadowdom />
-  </head>
-  <body>		
-		<!-- 3. Declare the element. Configure using its attributes. -->
-		<polymer-ajax id="ajaxTest"
-			url="data/bower.cfm" handleAs="json"
-			on-polymer-response="{{onPolymerResponse}}">
-		</polymer-ajax>
-			
-		<div class="container">
-			<button id="bnDownloadJson" type="button" class="btn btn-default">
-				<span class="glyphicon glyphicon-download"></span> Download json
-			</button>
-			
-			<div class="panel panel-info">
-				<div class="panel-heading">
-					<h3 class="panel-title">Polymer-Ajax results when file is loaded successfully</h3>
-				</div>
-				
-				<div class="panel-body">
-					<!--<div class="alert alert-danger" role="alert">!! if you see this text then the polymer-ajax test failed :( !!</div>-->
-					<div id="ajaxTestResponse" class="dynamic_result"></div>
-				</div>
-			</div>
-			
-			<hr/>
-			
-			<div class="well">
-				<polymer-ui-accordion selected="0" class="row">
-					<polymer-ui-collapsible>
-						<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 1</button></div>
-						<my-element id="test33" class="active" declarativeMessage="test33"></my-element>
-					</polymer-ui-collapsible>
-					
-					<polymer-ui-collapsible>
-						<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 2</button></div>
-						<my-element id="test34" class="active" declarativeMessage="test34"></my-element>
-					</polymer-ui-collapsible>
-					
-					<polymer-ui-collapsible>
-						<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 3</button></div>
-						<my-element id="test35" class="active" declarativeMessage="test35"></my-element>
-					</polymer-ui-collapsible>
-				</polymer-ui-accordion>
-			</div>
-			
-			<hr/>
-			
-			<form>
-				<h2>Nested form test</h2>
-				<my-element id="test36" class="active" declarativeMessage="test36"></my-element>
-			</form>
-		</div>
+		<link rel="stylesheet" href="css/theme.css" shim-shadowdom />
+		<link rel="stylesheet" href="css/theme-shim.css" shim-shadowdom />
+		<link rel="stylesheet" href="css/KendoThemes/kendo.common.core.css" shim-shadowdom />
+		<link rel="stylesheet" href="css/KendoThemes/kendo.common.css" shim-shadowdom />
+		<link rel="stylesheet" href="css/KendoThemes/kendo.default.css" shim-shadowdom />
+		<link rel="stylesheet" href="css/KendoThemes/kendo.flat.css" shim-shadowdom />
 		
+		<style>
+			[unresolved]
+			{
+				display:none;
+			}
+		</style>
+  </head>
+	
+  <body fullbleed vertical layout unresolved>
+		<h2 unresolved>Web Component support required.</h2>
+		
+		<template id="app" is="auto-binding" attributes="headerText">
+			<core-header-panel flex>
+				<core-toolbar id="mainheader">
+					<span flex>{{headerText}}</span>
+					
+					<paper-button id="test33Button2" on-click="{{onTestButtonClick2}}">Test33</paper-button>
+					
+					<button id="test33Button" on-click="{{onTestButtonClick}}">Test33</button>
+				</core-toolbar>
+				
+				<div class="container">
+					<ajax-test id="ajaxTest" url="data/gridData.json" gridData="{{gridData}}"></ajax-test>
+					
+					<hr/>
+					
+					<h3>Grid test</h3>
+					
+					<!--gridData[0].title: {{gridData[0].title}}<br/>-->
+					<grid-wrapper id="grid" gridData="{{gridData}}" flex></grid-wrapper>
+					<!--<grid-wrapper id="grid"></grid-wrapper>-->
+					<!--<grid-wrapper id="grid" on-grid-data-ready="{{onGridDataReady}}" class="jsGrid"></grid-wrapper>-->
+					<!--<div kendo-grid id="grid"></div>-->
+					<!--<div kendo-grid id="grid" k-data-source="{{gridDataSource}}"></div>-->
+					
+					<!--
+					gridDataSource.data: {{gridDataSource.data}}<br/>
+					-->
+					
+					<!--<template id="testTemplate" is="auto-binding">-->
+						<!--<aha-table id="grid" class="themed"></aha-table>-->
+					<!--</template>-->
+					
+					<hr/>
+					
+					<h3>Nested custom element test</h3>
+					
+					<div class="well">
+						<polymer-ui-accordion selected="-1" class="row">
+							<polymer-ui-collapsible>
+								<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 1</button></div>
+								<my-element id="test33" class="active" declarativeMessage="test33"></my-element>
+							</polymer-ui-collapsible>
+							
+							<polymer-ui-collapsible>
+								<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 2</button></div>
+								<my-element id="test34" class="active" declarativeMessage="test34"></my-element>
+							</polymer-ui-collapsible>
+							
+							<polymer-ui-collapsible>
+								<div class="polymer-ui-collapsible-header"><button type="button" class="btn btn-primary">Header 3</button></div>
+								<my-element id="test35" class="active" declarativeMessage="test35"></my-element>
+							</polymer-ui-collapsible>
+						</polymer-ui-accordion>
+					</div>
+					
+					<hr/>
+					
+					<form>
+						<h3>Nested form test (to test if shadow dom with a form can validate nested in a form)</h3>
+						<my-element id="test36" class="active" declarativeMessage="test36"></my-element>
+					</form>	
+					
+					<hr/>
+					
+					<h3>Declarative binding test (app.declarativeMessage)</h3>
+					
+					<app-element id="appElement" class="active" declarativeMessage="cool message from app-element">
+						<h4>Binding outside app-element</h4>
+						
+						<template id="appNestedContent" is="auto-binding">
+							<p id="aeBind1">aeBind1 declarativeMessage: <font class="dynamic_result">{{declarativeMessage}}</font></p>
+						</template>
+						
+						<!-- testing nested custom elements and scoping -->
+						<my-element id="test32" class="active" declarativeMessage="I'm nested in app-element">
+							<template id="test32NestedContent" is="auto-binding">
+								<p id="meBind1">meBind1 declarativeMessage: <font class="dynamic_result">{{declarativeMessage}}</font></p>
+								<p id="meBind2">meBind2 myElementDeclarativeMessage: <font class="dynamic_result">{{myElementDeclarativeMessage}}</font></p>
+								
+								<!--
+								<my-element class="active" declarativeMessage="say what???">
+									<template id="test32NestedContent" is="auto-binding">
+										<p id="meBind1">declarativeMessage: <font class="dynamic_result">{{declarativeMessage}}</font></p>
+										<p id="meBind2">myElementDeclarativeMessage: <font class="dynamic_result">{{myElementDeclarativeMessage}}</font></p>
+										
+										<my-element class="active" declarativeMessage="say what???">
+										</my-element>
+									</template>
+								</my-element>
+								-->
+							</template>
+						</my-element>
+					</app-element>
+					
+					<hr/>
+					
+					<h3>is="my-element" test</h3>
+						
+					<div is="my-element" class="active" declarativeMessage="test37"></div>
+				</div>
+			</core-header-panel>
+		</template>
+		
+		<!--
 		<script src="lib/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="lib/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-		
-		<script type="text/javascript" src="lib/polymerTest.js"></script>
+		-->
+		<script src="lib/polymerTest.js"></script>
   </body>
 </html>

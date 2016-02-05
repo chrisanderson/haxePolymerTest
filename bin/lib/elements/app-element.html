@@ -1,0 +1,40 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="app-element" constructor="AppElement" attributes="declarativeMessage">
+  <template>
+		<style>
+			@import url('../../css/common.min.css');
+		</style>
+		
+		<content>Nested Content is empty by default.</content>
+		
+		<h4>Binding inside app-element</h4>
+		<p id="aeBind2">aeBind2 declarativeMessage: <font class="dynamic_result">{{declarativeMessage}}</font></p>
+  </template>
+	
+	<script>
+    Polymer('app-element',
+		{
+			declarativeMessage:'N/A',
+			
+      ready:function()
+			{
+      },
+			
+			domReady:function()
+			{
+				//console.warn('domReady() this: ', this);
+				
+				console.warn('domReady() document.querySelector("template"): ', document.querySelector('template'));
+				console.warn('domReady() document.querySelector("template").model: ', document.querySelector('template').model);
+      },
+			
+			test:function()
+			{
+				console.warn('test() this: ', this);
+				console.warn('test() this.$: ', this.$);
+				console.warn('test() this.$.inputs: ', this.$.inputs);
+			}
+    });
+  </script>
+</polymer-element>

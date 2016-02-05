@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer-ajax/polymer-ajax.html">
+
+<polymer-element name="ajax-test" constructor="AjaxTest" attributes="url gridData">
+  <template>
+		<style>
+			@import url('../../css/common.min.css');
+		</style>
+		
+		<h3>Declarative AJAX test</h3>
+		
+		<polymer-ajax id="polymerAjax" 
+			url="{{url}}" handleAs="json"
+			on-polymer-response="{{onPolymerResponse}}">
+		</polymer-ajax>
+		
+		<div class="row">
+			<paper-button id="bnDownloadJson">Download Json</paper-button>
+			
+			<div class="col-sm-8">
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h3 class="panel-title">Polymer-Ajax results when file is loaded successfully</h3>
+					</div>
+					
+					<div class="panel-body">
+						<!--<div class="alert alert-danger" role="alert">!! if you see this text then the polymer-ajax test failed :( !!</div>-->
+						<div id="ajaxTestResponse" class="dynamic_result"></div>
+					</div>
+				</div>
+			</div>				
+		</div>
+		
+		<h3>Grid Nested test</h3>
+		
+		<!--<aha-table id="gridNested" class="themed"></aha-table>-->
+		
+		<grid-wrapper id="gridNested" gridData="{{gridData}}" flex></grid-wrapper>
+		<!--<grid-wrapper id="gridNested"></grid-wrapper>-->
+  </template>
+	
+	<script>
+    Polymer('ajax-test',
+		{
+			url:undefined,
+			gridNested:undefined,
+			
+      ready:function()
+			{
+				//console.log('ready()');
+      },
+			
+			domReady:function()
+			{
+				//console.log('domReady()');
+				//this.dispatchEvent(new CustomEvent('testEvent', {bubbles:true}));
+				this.fire('domReady', {});//future versions of polymer might dispatch events by default
+				
+				this.gridNested = this.$.gridNested;
+      },
+			
+			urlChanged:function(value)
+			{
+				if(!this.url){return;}
+				
+				//console.log('ajaxTest.urlChanged() url: ', this.url);
+			},
+			
+			onPolymerResponse:function(event)
+			{
+				console.log('onPolymerResponse() event: ', event);
+			}
+    });
+  </script>
+</polymer-element>

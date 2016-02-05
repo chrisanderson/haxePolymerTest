@@ -4,14 +4,14 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.2.3",
+    "polymer": "Polymer/polymer#~0.5",
     "polymer-ajax": "Polymer/polymer-ajax#~0.2.3",
     "polymer-list": "Polymer/polymer-list#~0.2.3",
-    "momentjs": "~2.6.0"
+    "aha-table": "~1.1.7"
   },
   "resolutions": {
-    "polymer": "master",
-    "core-component-page": "master",
-    "platform": "master"
+    "polymer": "~0.5.5",
+    "core-component-page": "^0.5",
+    "webcomponentsjs": "^0.6.0"
   }
 }

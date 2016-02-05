@@ -1,10 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<polymer-element name="my-element" attributes="declarativeMessage">
+<polymer-element name="my-element" constructor="MyElement" attributes="declarativeMessage">
   <template>
 		<style>
 			@import url('../../css/common.min.css');
-			@import url('../bower_components/bootstrap/dist/css/bootstrap.min.css');
 		</style>
 		
 		<div class="panel panel-default">
@@ -13,9 +12,10 @@
 			</div>
 			
 			<div class="panel-body">
-				<span>Hello from <font class="dynamic_result"><b>{{_tagName}}</b></font>.  This is my Shadow DOM.</span>
-				<div>Message from tag <font class="dynamic_result"><b>{{declarativeMessage}}</b></font>.  This message was created declaratively.</div>
-				<div>Current Date &amp; Time: <font class="dynamic_result"><b>{{currentDate}}</b></font></div>
+				<span>Hello from <font class="dynamic_result">[[localName]]</font>.  This is my Shadow DOM.</span>
+				<div>Message from tag <font class="dynamic_result">{{declarativeMessage}}</font>.  This message was created declaratively.</div>
+				<div>Current Date &amp; Time: <font class="dynamic_result">{{currentDate | date('MM/dd/yyyy, hh:mm:ss t')}}</font></div>
+				
 				<br/>
 				
 				<form role="form">
@@ -23,21 +23,21 @@
 						<label for="boundTextInput">Bound Text (Imperative)</label>
 						<input id="boundTextInput" type="text" class="form-control" />
 						
-						Result: <font class="dynamic_result"><b>{{boundText}}</b></font>
+						Result: <font class="dynamic_result">{{boundText}}</font>
 					</div>
 					
 					<div class="form-group">
 						<label for="boundTextInput2">Bound Text (Declarative)</label>
-						<input id="boundTextInput2" type="text" class="form-control" value="{{boundText2}}" />
+						<input id="boundTextInput2" type="text" class="form-control" _value="{{boundText2}}" />
 						
-						Result: <font class="dynamic_result"><b>{{boundText2}}</b></font>
+						Result: <font class="dynamic_result">{{boundText2}}</font>
 					</div>
 					
 					<div class="form-group">
 						<label for="boundTextInput3">Master Text (changes the 2 text inputs above)</label>
-						<input id="boundTextInput3" type="text" class="form-control" value="{{boundText3}}" />
+						<input id="boundTextInput3" type="text" class="form-control" _value="{{boundText3}}" />
 						
-						Result: <font class="dynamic_result"><b>{{boundText3}}</b></font>
+						Result: <font class="dynamic_result">{{boundText3}}</font>
 					</div>
 				</form>
 				
@@ -50,6 +50,12 @@
 					<option value="35">test35</option>
 					<option value="36">test36</option>
 				</select>
+				
+				<hr/>
+				
+				<h4>Nested Content</h4>
+				
+				<content>Nested Content is empty by default.</content>
 			</div>
 		</div>
   </template>
@@ -57,14 +63,20 @@
 	<script>
     Polymer('my-element',
 		{
-			_tagName:'my-element',
 			declarativeMessage:'N/A',
-			currentDate:moment().format('MMMM Do YYYY, h:mm:ss a'),
+			//currentDate:moment().format('MMMM Do YYYY, h:mm:ss a'),
+			currentDate:Date.now(),
 			boundText:'N/A',
 			boundText2:'N/A',
 			
-      ready:function()
+			//test 2 way binding
+			publish:
 			{
+				foo:{value:'foo', reflect:true}
+			},
+			
+      ready:function()
+			{				
 				//this does work here, haven't yet connected a haxe class to a real polymer element in order to test reliably within haxe
 				//console.log('this: ', this);//logs entire element
 			
@@ -82,7 +94,7 @@
 				//var myElement = document.querySelector('#test34');//'my-element'
 				//console.log('myElement: ', myElement);
 				
-				var template = this.querySelector('template');
+				//var template = this.querySelector('template');
 				//console.log('template: ', template);
 				
 				//template.model = {boundText:'test bound text'};
@@ -91,11 +103,18 @@
 				//console.warn('test() this: ', this);
 				//console.warn('test() this.$: ', this.$);
 				//console.warn('test() this.$.inputs: ', this.$.inputs);
+				
+				//works
+				setInterval(function()
+				{
+					//this.currentDate = moment().format('MMMM Do YYYY, h:mm:ss a');
+					this.currentDate = Date.now();
+				}.bind(this), 1000);
       },
 			
 			currentDateChanged:function()
 			{
-				this.currentDate = moment().format('MMMM Do YYYY, h:mm:ss a');
+				//this.currentDate = moment().format('MMMM Do YYYY, h:mm:ss a');
 			},
 			
 			boundText3Changed:function()
@@ -107,9 +126,9 @@
 			
 			test:function()
 			{
-				console.warn('test() this: ', this);
-				console.warn('test() this.$: ', this.$);
-				console.warn('test() this.$.inputs: ', this.$.inputs);
+				console.warn('MyElement.test() this: ', this);
+				console.warn('MyElement.test() this.$: ', this.$);
+				console.warn('MyElement.test() this.$.inputs: ', this.$.inputs);
 			}
     });
   </script>

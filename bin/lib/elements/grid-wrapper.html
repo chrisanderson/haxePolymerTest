@@ -1,0 +1,141 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer-ajax/polymer-ajax.html">
+<link rel="import" href="../bower_components/aha-table/dist/aha-table.html">
+<!--
+<script src="../jsgrid/jsgrid.js"></script>
+-->
+<polymer-element name="grid-wrapper" constructor="GridWrapper" attributes="gridData">
+  <template>
+		<style>
+			@import url('../../css/common.min.css');
+			<!--@import url('../bower_components/bootstrap/dist/css/bootstrap.min.css');-->
+			<!--
+			@import url('../../css/jsgrid/jsgrid.min.css');
+			@import url('../../css/jsgrid/jsgrid-theme.min.css');
+			-->
+			@import url('../../css/theme.css');
+			@import url('../../css/theme-shim.css');
+		</style>
+		
+		gridData[0].title: <font class="dynamic_result">{{gridData[0].title}}</font><br/>
+		
+		<!-- aha-table doesn't allow dataBinding in data attribute, has to be set in js _data="{{gridData}}" -->
+		<aha-table id="themed" flex></aha-table>
+		
+		<content>
+			<!--<div id="innerGrid" data="{{gridData}}"></div>-->
+			<!--<div id="innerGrid" flex></div>-->
+		</content>
+  </template>
+	
+	<script>
+    Polymer('grid-wrapper',
+		{
+			grid:undefined,
+			gridData:[],
+			
+      ready:function()
+			{
+				//console.log('ready() this.id: ', this.id);
+				
+				this.addEventListener('grid-data-ready', this.setGridData);
+      },
+			
+			domReady:function()
+			{				
+				//this.grid = $(this.$.innerGrid).data("jsGrid");
+				/*
+				this.grid = new jsGrid.Grid($(this.$.innerGrid),
+				{
+					width: "100%",
+					height: "300px",
+					
+					filtering: true,
+					editing: true,
+					sorting: true,
+					paging: true,
+					pageLoading: true,
+					autoload: false,
+					
+					controller:
+					{
+						loadData:this.loadData.bind(this),
+						insertItem:this.insertItem.bind(this),
+						updateItem:this.updateItem.bind(this),
+						deleteItem:this.deleteItem.bind(this)
+					},
+					
+					fields:
+					[
+						{ name: "content", type: "text", width: 150 },
+						{ name: "date", type: "text", width: 100 },
+						{ name: "enabled", type: "checkbox", width: 40 },
+						{ name: "title", type: "text"},
+						{ name: "type", type: "text"},
+						{ type: "control" }
+					]
+				});
+				*/
+				this.grid = this.$.themed;
+				
+				//console.log('domReady() this.gridData: ', this.gridData);
+				//console.log('domReady() this.grid: ', this.grid);
+      },
+			
+			onGridDataReady:function(event)
+			{
+				//console.log('onGridDataReady() event: ', event);
+			},
+			
+			setGridData:function(gridData)
+			{
+				//console.log('setGridData this: ', this);
+				//console.log('setGridData gridData: ', gridData);
+				
+				this.gridData = gridData;
+				
+				//console.log('setGridData this.gridData: ', this.gridData);
+				
+				//this.grid.data = this.gridData;//docs mention the data prop is for static data
+				//this.loadData();
+				this.grid.loadData();
+				//this.grid.loadData({pageIndex:1, pageSize:10});
+				//this.grid.render().done(function(){alert('js grid render complete')});
+				//this.grid.refresh();
+			},
+			
+			gridDataChanged:function(oldValue, newValue)
+			{
+				if(!newValue || !newValue.length){return;}
+				
+				//console.log('gridDataChanged() newValue: ', newValue);
+				
+				//this.gridData = newValue;
+				//this.grid.loadData();
+				
+				//aha-table
+				this.grid.data = newValue;
+			},
+			
+			//jsgrid controller api
+			loadData:function(filter)
+			{
+				//console.log('loadData() this: ', this);
+				//console.log('loadData() this.gridData: ', this.gridData);
+				
+				var d = $.Deferred();
+				
+				//d.resolve({data:this.gridData, itemsCount:this.gridData.length});
+				d.resolve({data:this.gridData, itemsCount:this.gridData.length});
+				
+				//debug info
+				d.promise().then(function(params){console.log(this.id + ' loadData() d.promise().then() params: ', params)}.bind(this));
+				
+				return d.promise();
+			},
+			insertItem:function(item){},
+			updateItem:function(item){},
+			deleteItem:function(item){}
+    });
+  </script>
+</polymer-element>
