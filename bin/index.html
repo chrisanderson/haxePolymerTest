@@ -6,9 +6,7 @@
 		
     <!-- 1. Load platform.js for polyfill support. -->
     <script src="lib/bower_components/webcomponentsjs/webcomponents.js"></script>
-		<!-- kendo relies on jquery -->
     <script src="lib/jquery/jquery-2.1.3.min.js"></script>
-    <script src="lib/kendoui/kendo.web.js"></script>
 
     <!-- 2. Use an HTML Import to bring in the element. -->
 		<link rel="import" href="lib/bower_components/paper-button/paper-button.html">
@@ -31,10 +29,6 @@
 		<link rel="stylesheet" href="css/common.min.css" shim-shadowdom />
 		<link rel="stylesheet" href="css/theme.css" shim-shadowdom />
 		<link rel="stylesheet" href="css/theme-shim.css" shim-shadowdom />
-		<link rel="stylesheet" href="css/KendoThemes/kendo.common.core.css" shim-shadowdom />
-		<link rel="stylesheet" href="css/KendoThemes/kendo.common.css" shim-shadowdom />
-		<link rel="stylesheet" href="css/KendoThemes/kendo.default.css" shim-shadowdom />
-		<link rel="stylesheet" href="css/KendoThemes/kendo.flat.css" shim-shadowdom />
 		
 		<style>
 			[unresolved]
@@ -68,8 +62,6 @@
 					<grid-wrapper id="grid" gridData="{{gridData}}" flex></grid-wrapper>
 					<!--<grid-wrapper id="grid"></grid-wrapper>-->
 					<!--<grid-wrapper id="grid" on-grid-data-ready="{{onGridDataReady}}" class="jsGrid"></grid-wrapper>-->
-					<!--<div kendo-grid id="grid"></div>-->
-					<!--<div kendo-grid id="grid" k-data-source="{{gridDataSource}}"></div>-->
 					
 					<!--
 					gridDataSource.data: {{gridDataSource.data}}<br/>
