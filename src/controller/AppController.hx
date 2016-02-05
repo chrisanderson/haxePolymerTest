@@ -87,12 +87,10 @@ class AppController
 		test33Button.mapDomEventHandler('click', this);
 		test33Button2.mapDomEventHandler('click', this);
 		
-		//setupKendoGrid();
-		
 		//fix here throws errors with haxe 3.2, thinking about testing prime-bindable
 		//var onGridDataChange = function(oldValue, newValue) 
 		//{
-			//setupKendoGrid();
+			//
 		//}		
 		//_testClassInstance.gridData.bindx(onGridDataChange);
 		//onGridDataChange.on(_testClassInstance.gridData.change, this);
@@ -140,54 +138,11 @@ class AppController
 		
 		//if(_gridData == null)
 		//{
-			//setupKendoGrid();
+			//
 		//}
 		
-		//var tempGrid:Dynamic = new JQuery("#grid").data("kendoGrid");
-		////var tempGrid:Dynamic = untyped __js__('$("#grid").data("kendoGrid")');
+		
 		//trace({'tempGrid':tempGrid});
 		//tempGrid.dataSource = {data:_gridData, pageSize:10};
-	}
-	
-	public function setupKendoGrid():Void 
-	{
-		//trace({'setupKendoGrid _testClassInstance.gridData':_testClassInstance.gridData});
-		//trace({'setupKendoGrid gridData':gridData});
-		
-		var testGrid:Dynamic = untyped __js__('$("#grid").kendoGrid(
-		{
-			//dataSource:{
-					////type: "odata",
-					////transport: {
-							////read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Customers"
-					////},
-					//data:gridData,
-					//pageSize: 5
-			//},
-			height: 200,
-			groupable: true,
-			sortable: true,
-			pageable: {
-					refresh: true,
-					pageSizes: true,
-					buttonCount: 5
-			},
-			columns: [{
-					field: "date",
-					title: "Date"
-			}, {
-					field: "title",
-					title: "Title"
-			}, {
-					field: "type",
-					title: "Type"
-			}, {
-					field: "content",
-					title: "Content"
-			}, {
-					field: "enabled",
-					title: "Enabled"
-			}]
-		});');
 	}
 }

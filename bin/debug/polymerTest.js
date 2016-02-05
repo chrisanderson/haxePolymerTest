@@ -365,43 +365,6 @@ controller_AppController.prototype = {
 		console.log({ 'app.gridData' : this.app.gridData});
 		console.log({ 'app.gridDataSource' : this.app.gridDataSource});
 	}
-	,setupKendoGrid: function() {
-		var testGrid = $("#grid").kendoGrid(
-		{
-			//dataSource:{
-					////type: "odata",
-					////transport: {
-							////read: "http://demos.telerik.com/kendo-ui/service/Northwind.svc/Customers"
-					////},
-					//data:gridData,
-					//pageSize: 5
-			//},
-			height: 200,
-			groupable: true,
-			sortable: true,
-			pageable: {
-					refresh: true,
-					pageSizes: true,
-					buttonCount: 5
-			},
-			columns: [{
-					field: "date",
-					title: "Date"
-			}, {
-					field: "title",
-					title: "Title"
-			}, {
-					field: "type",
-					title: "Type"
-			}, {
-					field: "content",
-					title: "Content"
-			}, {
-					field: "enabled",
-					title: "Enabled"
-			}]
-		});;
-	}
 	,__class__: controller_AppController
 };
 var controller_SignalController = function() {
