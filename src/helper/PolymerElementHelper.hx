@@ -1,6 +1,6 @@
 package helper;
 
-import haxe.ds.StringMap;
+import haxe.ds.*;
 import js.*;
 import js.html.*;
 
@@ -18,33 +18,35 @@ class PolymerElementHelper //extends PolymerElement
 {	
 	//had thought about grabbing an array of all shadowDom elements with an id similar to polymer's $ shortcut
 	//would be cool if i could return a struct similar to $ instead StringMap<Element>
-	static inline public function getStaticShadowDomNodeList(polymerElementInstance:PolymerElement):StringMap<Element>
+	static inline public function getStaticShadowDomNodeList(polymerElementInstance:PolymerElement):ObjectMap<{}, Dynamic>
 	{
-		//return polymerElementInstance[untyped __js__("'.$'")];
-		//return untyped __js__('$polymerElementInstance.$');
-		//return untyped __js__('window.document.querySelector("#test36").$');//fix here temp code
+		var tempNodeList:ObjectMap<{}, Dynamic> = cast untyped __js__("{0}.$", polymerElementInstance);
 		
-		var tempElementsWithIdList = polymerElementInstance.shadowRoot.querySelectorAll('[id]');
-		//var tempElementId = polymerElementInstance.shadowRoot.querySelector('#selectTest').id;
-		var tempResult:StringMap<Element> = new StringMap<Element>();// = 
-		//[
-			//'$tempElementId' => polymerElementInstance.shadowRoot.querySelector('#selectTest'),
-			//'selectTest' => polymerElementInstance.shadowRoot.querySelector('#selectTest')
-		//];
+		return tempNodeList;
 		
-		for(tempProp in tempElementsWithIdList)
-		{
-			//Browser.window.console.warn('getStaticShadowDomNodeList() tempProp: ', tempProp);
-			
-			var tempElement:Element = cast tempProp;
-			var tempElementId = tempElement.id;//.replace('$', '');
-			
-			tempResult.set(tempElementId, cast tempProp);
-		}
-		
-		//Browser.window.console.warn('getStaticShadowDomNodeList() tempResult: ', tempResult);
-		
-		return tempResult;
+		//var tempElementsWithIdList:Array<Element> = Lambda.array(tempNodeList);
+		//
+		////var tempElementsWithIdList = polymerElementInstance.shadowRoot.querySelectorAll('[id]');
+		////var tempElementId = polymerElementInstance.shadowRoot.querySelector('#selectTest').id;
+		//var tempResult:StringMap<Element> = new StringMap<Element>();// = 
+		////[
+			////'$tempElementId' => polymerElementInstance.shadowRoot.querySelector('#selectTest'),
+			////'selectTest' => polymerElementInstance.shadowRoot.querySelector('#selectTest')
+		////];
+		//
+		//for(tempProp in tempElementsWithIdList)
+		//{
+			////Browser.window.console.warn('getStaticShadowDomNodeList() tempProp: ', tempProp);
+			//
+			//var tempElement:Element = cast tempProp;
+			//var tempElementId = tempElement.id;//.replace('$', '');
+			//
+			//tempResult.set(tempElementId, cast tempProp);
+		//}
+		//
+		////Browser.window.console.warn('getStaticShadowDomNodeList() tempResult: ', tempResult);
+		//
+		//return tempResult;
 	}
 	
 	static inline public function getShadowDomElementById(polymerElementInstance:PolymerElement, elementId:String):Dynamic

@@ -1,4 +1,4 @@
-(function (console) { "use strict";
+(function (console, $global) { "use strict";
 var $hxClasses = {},$estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -22,6 +22,13 @@ HxOverrides.substr = function(s,pos,len) {
 		if(pos < 0) pos = 0;
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
+};
+HxOverrides.iter = function(a) {
+	return { cur : 0, arr : a, hasNext : function() {
+		return this.cur < this.arr.length;
+	}, next : function() {
+		return this.arr[this.cur++];
+	}};
 };
 var Main = function() {
 	this.app = window.document.querySelector("#app");
@@ -73,8 +80,8 @@ Main.prototype = {
 		tempTest32NestedContent.declarativeMessage = appElement.declarativeMessage;
 		tempTest32NestedContent.myElementDeclarativeMessage = myNestedElement.declarativeMessage;
 		var tempStaticShadowDomNodeList = helper_PolymerElementHelper.getStaticShadowDomNodeList(myElementDomTest);
-		var selectTest;
-		selectTest = __map_reserved.selectTest != null?tempStaticShadowDomNodeList.getReserved("selectTest"):tempStaticShadowDomNodeList.h["selectTest"];
+		window.console.log("tempStaticShadowDomNodeList: ",tempStaticShadowDomNodeList);
+		var selectTest = tempStaticShadowDomNodeList.h["selectTest".__id__];
 		selectTest.addEventListener("change",function(event) {
 			var tempOptionCollection = selectTest.options;
 			var tempSelectedOption = null;
@@ -137,17 +144,6 @@ $hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
-};
-var StringBuf = function() {
-	this.b = "";
-};
-$hxClasses["StringBuf"] = StringBuf;
-StringBuf.__name__ = ["StringBuf"];
-StringBuf.prototype = {
-	add: function(x) {
-		this.b += Std.string(x);
-	}
-	,__class__: StringBuf
 };
 var StringTools = function() { };
 $hxClasses["StringTools"] = StringTools;
@@ -378,6 +374,34 @@ controller_SignalController.prototype = {
 var haxe_IMap = function() { };
 $hxClasses["haxe.IMap"] = haxe_IMap;
 haxe_IMap.__name__ = ["haxe","IMap"];
+var haxe_ds_ObjectMap = function() { };
+$hxClasses["haxe.ds.ObjectMap"] = haxe_ds_ObjectMap;
+haxe_ds_ObjectMap.__name__ = ["haxe","ds","ObjectMap"];
+haxe_ds_ObjectMap.__interfaces__ = [haxe_IMap];
+haxe_ds_ObjectMap.prototype = {
+	keys: function() {
+		var a = [];
+		for( var key in this.h.__keys__ ) {
+		if(this.h.hasOwnProperty(key)) a.push(this.h.__keys__[key]);
+		}
+		return HxOverrides.iter(a);
+	}
+	,toString: function() {
+		var s_b = "";
+		s_b += "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			s_b += Std.string(Std.string(i));
+			s_b += " => ";
+			s_b += Std.string(Std.string(this.h[i.__id__]));
+			if(it.hasNext()) s_b += ", ";
+		}
+		s_b += "}";
+		return s_b;
+	}
+	,__class__: haxe_ds_ObjectMap
+};
 var haxe_ds_StringMap = function() {
 	this.h = { };
 };
@@ -406,35 +430,6 @@ haxe_ds_StringMap.prototype = {
 	,existsReserved: function(key) {
 		if(this.rh == null) return false;
 		return this.rh.hasOwnProperty("$" + key);
-	}
-	,arrayKeys: function() {
-		var out = [];
-		for( var key in this.h ) {
-		if(this.h.hasOwnProperty(key)) out.push(key);
-		}
-		if(this.rh != null) {
-			for( var key in this.rh ) {
-			if(key.charCodeAt(0) == 36) out.push(key.substr(1));
-			}
-		}
-		return out;
-	}
-	,toString: function() {
-		var s = new StringBuf();
-		s.b += "{";
-		var keys = this.arrayKeys();
-		var _g1 = 0;
-		var _g = keys.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var k = keys[i];
-			if(k == null) s.b += "null"; else s.b += "" + k;
-			s.b += " => ";
-			s.add(Std.string(__map_reserved[k] != null?this.getReserved(k):this.h[k]));
-			if(i < keys.length) s.b += ", ";
-		}
-		s.b += "}";
-		return s.b;
 	}
 	,__class__: haxe_ds_StringMap
 };
@@ -471,22 +466,12 @@ var helper_PolymerElementHelper = function() { };
 $hxClasses["helper.PolymerElementHelper"] = helper_PolymerElementHelper;
 helper_PolymerElementHelper.__name__ = ["helper","PolymerElementHelper"];
 helper_PolymerElementHelper.getStaticShadowDomNodeList = function(polymerElementInstance) {
-	var tempElementsWithIdList = polymerElementInstance.shadowRoot.querySelectorAll("[id]");
-	var tempResult = new haxe_ds_StringMap();
-	var _g = 0;
-	while(_g < tempElementsWithIdList.length) {
-		var tempProp = tempElementsWithIdList[_g];
-		++_g;
-		var tempElement = tempProp;
-		var tempElementId = tempElement.id;
-		tempResult.set(tempElementId,tempProp);
-	}
-	return tempResult;
+	var tempNodeList = polymerElementInstance.$;
+	return tempNodeList;
 };
 helper_PolymerElementHelper.getShadowDomElementById = function(polymerElementInstance,elementId) {
 	var tempStaticShadowDomNodeList = helper_PolymerElementHelper.getStaticShadowDomNodeList(polymerElementInstance);
-	var tempResult;
-	tempResult = __map_reserved[elementId] != null?tempStaticShadowDomNodeList.getReserved(elementId):tempStaticShadowDomNodeList.h[elementId];
+	var tempResult = tempStaticShadowDomNodeList.h[elementId.__id__];
 	if(tempResult != null) return tempResult; else throw new js__$Boot_HaxeError("Element with id: " + elementId + " wasn't found in " + Std.string(tempStaticShadowDomNodeList) + ".");
 };
 var js__$Boot_HaxeError = function(val) {
@@ -637,7 +622,7 @@ js_Boot.__isNativeObj = function(o) {
 	return js_Boot.__nativeClassName(o) != null;
 };
 js_Boot.__resolveNativeClass = function(name) {
-	return (Function("return typeof " + name + " != \"undefined\" ? " + name + " : null"))();
+	return $global[name];
 };
 var js_Browser = function() { };
 $hxClasses["js.Browser"] = js_Browser;
@@ -1302,6 +1287,6 @@ haxe_IMap.__meta__ = { obj : { 'interface' : null}};
 js_Boot.__toStr = {}.toString;
 minject_point_InjectionPoint.__meta__ = { obj : { 'interface' : null}};
 Main.main();
-})(typeof console != "undefined" ? console : {log:function(){}});
+})(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
 
 //# sourceMappingURL=polymerTest.js.map

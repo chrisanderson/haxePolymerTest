@@ -167,7 +167,7 @@ class Main
 		//tempBoundTextInput.bind("textContent", new PathObserver(myNestedElement, "declarativeMessage"));
 		
 		var tempStaticShadowDomNodeList = myElementDomTest.getStaticShadowDomNodeList();//instance preferred
-		//Browser.window.console.log('tempStaticShadowDomNodeList: ', tempStaticShadowDomNodeList);
+		Browser.window.console.log('tempStaticShadowDomNodeList: ', tempStaticShadowDomNodeList);
 		//Browser.window.console.log("myElementDomTest.getElementById('selectTest'): ", myElementDomTest.getElementById('selectTest'));
 		//Browser.window.console.log("tempStaticShadowDomNodeList.get('selectTest'): ", tempStaticShadowDomNodeList.get('selectTest'));
 		
@@ -180,8 +180,11 @@ class Main
 		//var selectTest:SelectElement = cast untyped __js__('window.document.querySelector("#test36").$.selectTest');//fix here works but want to tap MyElement for this
 		//var selectTest:SelectElement = cast tempStaticShadowDomNodeList.selectTest;//works but tempStaticShadowDomNodeList is dynamic
 		//var selectTest:SelectElement = cast myElementDomTest.getShadowDomElement('#selectTest33');//works but dev has to know the elements available in the shadow dom
+		//var selectTest:SelectElement = cast tempStaticShadowDomNodeList.selectTest;
 		var selectTest:SelectElement = cast tempStaticShadowDomNodeList.get('selectTest');//works but dev has to know the elements available in the shadow dom
+		//var selectTest:SelectElement = cast tempStaticShadowDomNodeList['selectTest'];
 		//var selectTest:SelectElement = myElementDomTest.get_selectTest();//works
+		
 		selectTest.addEventListener('change', function(event)
 		{
 			//Browser.window.console.log('onSelectTestChange() event: ', event);
