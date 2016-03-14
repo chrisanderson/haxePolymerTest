@@ -1,4 +1,4 @@
-(function (console) { "use strict";
+(function (console, $global) { "use strict";
 var $hxClasses = {};
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -24,8 +24,7 @@ HxOverrides.substr = function(s,pos,len) {
 	return s.substr(pos,len);
 };
 var Main = function() {
-	this._mainInjector = new minject_Injector();
-	this._initializeContext();
+	this.app = window.document.querySelector("#app");
 	window.addEventListener("polymer-ready",$bind(this,this.onPolymerReady));
 	window.addEventListener("WebComponentsReady",$bind(this,this.onWebComponentsReady));
 };
@@ -36,15 +35,55 @@ Main.main = function() {
 };
 Main.prototype = {
 	onPolymerReady: function(event) {
+		null;
 	}
 	,onWebComponentsReady: function(event) {
+		this.app.addEventListener("template-bound",$bind(this,this._onAppTemplateBound));
+	}
+	,_onAppTemplateBound: function(event) {
+		this._mainInjector = new minject_Injector();
+		this._initializeContext();
 		this._testThisJunk();
+		this._mainInjector.instantiate(controller_AjaxTestController);
+		null;
 	}
 	,_initializeContext: function() {
 		this._mainInjector.mapValue(test_TestClass,new test_TestClass());
+		this._mainInjector.mapValue(controller_SignalController,new controller_SignalController());
 	}
 	,_testThisJunk: function() {
 		this._mainInjector.instantiate(controller_AppController);
+		var appElement = window.document.querySelector("#appElement");
+		appElement.test();
+		var myElementDomTest = window.document.querySelector("#test36");
+		myElementDomTest.declarativeMessage = "test36 !!! changed @ runtime by haxe !!!";
+		myElementDomTest.test();
+		var myElementDomTest2 = window.document.querySelector("#test33");
+		myElementDomTest2.declarativeMessage = "test33 !!! changed @ runtime by haxe !!!";
+		var tempAppNestedContent = window.document.querySelector("#appNestedContent");
+		tempAppNestedContent.declarativeMessage = appElement.declarativeMessage;
+		var myNestedElement = window.document.querySelector("#test32");
+		var tempTest32NestedContent = window.document.querySelector("#test32NestedContent");
+		tempTest32NestedContent.declarativeMessage = appElement.declarativeMessage;
+		tempTest32NestedContent.myElementDeclarativeMessage = myNestedElement.declarativeMessage;
+		var tempStaticShadowDomNodeList = helper_PolymerElementHelper.getStaticShadowDomNodeList(myElementDomTest);
+		window.console.log("tempStaticShadowDomNodeList: ",tempStaticShadowDomNodeList);
+		var testBump = myElementDomTest.$;
+		window.console.log("testBump:",testBump);
+		var selectTest = myElementDomTest.$.selectTest;
+		selectTest.addEventListener("change",function(event) {
+			var tempOptionCollection = selectTest.options;
+			var tempSelectedOption = null;
+			var _g = 0;
+			while(_g < tempOptionCollection.length) {
+				var tempOption = tempOptionCollection[_g];
+				++_g;
+				if(tempOption.selected) tempSelectedOption = tempOption;
+			}
+			myElementDomTest.boundText3 = "test" + tempSelectedOption.value;
+		});
+		var testTemplate = window.document.querySelector("#testTemplate");
+		null;
 	}
 	,__class__: Main
 };
@@ -82,6 +121,28 @@ Reflect.fields = function(o) {
 };
 Reflect.isFunction = function(f) {
 	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
+};
+Reflect.compareMethods = function(f1,f2) {
+	if(f1 == f2) return true;
+	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
+	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
+};
+var Std = function() { };
+$hxClasses["Std"] = Std;
+Std.__name__ = ["Std"];
+Std.string = function(s) {
+	return js_Boot.__string_rec(s,"");
+};
+var StringBuf = function() {
+	this.b = "";
+};
+$hxClasses["StringBuf"] = StringBuf;
+StringBuf.__name__ = ["StringBuf"];
+StringBuf.prototype = {
+	add: function(x) {
+		this.b += Std.string(x);
+	}
+	,__class__: StringBuf
 };
 var StringTools = function() { };
 $hxClasses["StringTools"] = StringTools;
@@ -153,10 +214,58 @@ Type.createInstance = function(cl,args) {
 	}
 	return null;
 };
-var controller_AppController = function() {
+var controller_AjaxTestController = function(testClassInstance,signalControllerInstance) {
+	this.ajaxTestElement = window.document.querySelector("#ajaxTest");
+	this._testClassInstance = testClassInstance;
+	this._signalControllerInstance = signalControllerInstance;
+	this.ajaxTestElement.addEventListener("domReady",$bind(this,this.onDomReady));
+	this.polymerAjax = helper_PolymerElementHelper.getShadowDomElementById(this.ajaxTestElement,"polymerAjax");
+	this.downloadBtn = helper_PolymerElementHelper.getShadowDomElementById(this.ajaxTestElement,"bnDownloadJson");
+	this._testThisJunk();
+};
+$hxClasses["controller.AjaxTestController"] = controller_AjaxTestController;
+controller_AjaxTestController.__name__ = ["controller","AjaxTestController"];
+controller_AjaxTestController.prototype = {
+	onDomReady: function(event) {
+		null;
+	}
+	,onPolymerResponse: function(event) {
+		var tempResult = JSON.parse(JSON.stringify(event.detail.response));
+		var tempResultString = "";
+		var tempResultArray = [];
+		var _g = 0;
+		var _g1 = Reflect.fields(tempResult);
+		while(_g < _g1.length) {
+			var tempProp = _g1[_g];
+			++_g;
+			tempResultString += tempProp + ": " + Std.string(Reflect.field(tempResult,tempProp)) + "<br>";
+		}
+		var _g2 = 0;
+		while(_g2 < 100) {
+			var i = _g2++;
+			tempResultArray.push({ title : tempResult.titleList[Math.ceil(Math.random() * tempResult.titleList.length) - 1], date : tempResult.dateList[Math.ceil(Math.random() * tempResult.dateList.length) - 1], type : tempResult.typeList[Math.ceil(Math.random() * tempResult.typeList.length) - 1], content : tempResult.contentList[Math.ceil(Math.random() * tempResult.contentList.length) - 1], enabled : tempResult.enabledList[Math.ceil(Math.random() * tempResult.enabledList.length) - 1]});
+		}
+		(js_Boot.__cast(helper_PolymerElementHelper.getShadowDomElementById(this.ajaxTestElement,"ajaxTestResponse") , HTMLDivElement)).innerHTML = tempResultString;
+		this.ajaxTestElement.fire("grid-data-ready",{ result : tempResultArray});
+		this._signalControllerInstance.gridDataSignal.dispatch(tempResultArray);
+	}
+	,_testThisJunk: function() {
+		var _g = this;
+		var tempStaticShadowDomNodeList = helper_PolymerElementHelper.getStaticShadowDomNodeList(this.ajaxTestElement);
+		this.downloadBtn.addEventListener("click",function(event) {
+			_g.polymerAjax.go();
+		});
+		helper_DomHelper.mapDomEventHandler(this.polymerAjax,"polymer-response",this);
+	}
+	,__class__: controller_AjaxTestController
+};
+var controller_AppController = function(testClassInstance,signalControllerInstance) {
+	this.grid = window.document.querySelector("#grid");
 	this.test33Button2 = window.document.querySelector("#test33Button2");
 	this.test33Button = window.document.querySelector("#test33Button");
 	this.app = window.document.querySelector("#app");
+	this._testClassInstance = testClassInstance;
+	this._signalControllerInstance = signalControllerInstance;
 	this._testThisJunk();
 };
 $hxClasses["controller.AppController"] = controller_AppController;
@@ -166,18 +275,43 @@ controller_AppController.prototype = {
 		this.app.headerText = "Haxe Polymer Test";
 		helper_DomHelper.mapDomEventHandler(this.test33Button,"click",this);
 		helper_DomHelper.mapDomEventHandler(this.test33Button2,"click",this);
+		if(this.grid != null) this.grid.addEventListener("grid-data-ready",function(event) {
+			js_Browser.alert("event: " + event);
+		});
+		this._signalControllerInstance.gridDataSignal.add($bind(this,this.onGridDataChange));
 	}
 	,onTestButtonClick: function(event) {
 		js_Browser.alert("html button test33 :) event: " + event);
+		null;
 	}
 	,onTestButtonClick2: function(event) {
 		js_Browser.alert("paper-button test33 :) event: " + event);
+		null;
+	}
+	,onGridDataChange: function(data) {
+		this._gridData = data;
+		this.app.gridData = this._gridData;
+		this.app.gridDataSource = { data : this._gridData, pageSize : 10};
+		if(this.grid != null) null;
+		null;
 	}
 	,__class__: controller_AppController
+};
+var controller_SignalController = function() {
+	this.gridDataSignal = new msignal_Signal1();
+};
+$hxClasses["controller.SignalController"] = controller_SignalController;
+controller_SignalController.__name__ = ["controller","SignalController"];
+controller_SignalController.prototype = {
+	__class__: controller_SignalController
 };
 var haxe_IMap = function() { };
 $hxClasses["haxe.IMap"] = haxe_IMap;
 haxe_IMap.__name__ = ["haxe","IMap"];
+var haxe_ds_ObjectMap = function() { };
+$hxClasses["haxe.ds.ObjectMap"] = haxe_ds_ObjectMap;
+haxe_ds_ObjectMap.__name__ = ["haxe","ds","ObjectMap"];
+haxe_ds_ObjectMap.__interfaces__ = [haxe_IMap];
 var haxe_ds_StringMap = function() {
 	this.h = { };
 };
@@ -207,6 +341,35 @@ haxe_ds_StringMap.prototype = {
 		if(this.rh == null) return false;
 		return this.rh.hasOwnProperty("$" + key);
 	}
+	,arrayKeys: function() {
+		var out = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) out.push(key);
+		}
+		if(this.rh != null) {
+			for( var key in this.rh ) {
+			if(key.charCodeAt(0) == 36) out.push(key.substr(1));
+			}
+		}
+		return out;
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b += "{";
+		var keys = this.arrayKeys();
+		var _g1 = 0;
+		var _g = keys.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var k = keys[i];
+			if(k == null) s.b += "null"; else s.b += "" + k;
+			s.b += " => ";
+			s.add(Std.string(__map_reserved[k] != null?this.getReserved(k):this.h[k]));
+			if(i < keys.length) s.b += ", ";
+		}
+		s.b += "}";
+		return s.b;
+	}
 	,__class__: haxe_ds_StringMap
 };
 var haxe_rtti_Meta = function() { };
@@ -235,9 +398,33 @@ helper_DomHelper.mapDomEventHandler = function(elementInstance,eventName,hostCla
 	var tempEventHandler = helper_DomHelper.stripDataBindingCharacters(elementInstance.getAttribute("on-" + eventName));
 	if(Reflect.isFunction(Reflect.field(hostClassInstance,tempEventHandler))) elementInstance.addEventListener(eventName,Reflect.field(hostClassInstance,tempEventHandler).bind(hostClassInstance)); else window.console.error("The dom references a function: " + tempEventHandler + ", but the function wasn't found in " + Type.getClassName(Type.getClass(hostClassInstance)) + ".");
 };
+var helper_PolymerElementHelper = function() { };
+$hxClasses["helper.PolymerElementHelper"] = helper_PolymerElementHelper;
+helper_PolymerElementHelper.__name__ = ["helper","PolymerElementHelper"];
+helper_PolymerElementHelper.getStaticShadowDomNodeList = function(polymerElementInstance) {
+	var tempElementsWithIdList = polymerElementInstance.shadowRoot.querySelectorAll("[id]");
+	var tempResult = new haxe_ds_StringMap();
+	var _g = 0;
+	while(_g < tempElementsWithIdList.length) {
+		var tempProp = tempElementsWithIdList[_g];
+		++_g;
+		var tempElement = tempProp;
+		var tempElementId = tempElement.id;
+		tempResult.set(tempElementId,tempProp);
+	}
+	window.console.warn("getStaticShadowDomNodeList() tempResult: ",tempResult);
+	return tempResult;
+};
+helper_PolymerElementHelper.getShadowDomElementById = function(polymerElementInstance,elementId) {
+	var tempStaticShadowDomNodeList = helper_PolymerElementHelper.getStaticShadowDomNodeList(polymerElementInstance);
+	var tempResult;
+	tempResult = __map_reserved[elementId] != null?tempStaticShadowDomNodeList.getReserved(elementId):tempStaticShadowDomNodeList.h[elementId];
+	if(tempResult != null) return tempResult; else throw new js__$Boot_HaxeError("Element with id: " + elementId + " wasn't found in " + Std.string(tempStaticShadowDomNodeList) + ".");
+};
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
 	this.val = val;
+	this.message = String(val);
 	if(Error.captureStackTrace) Error.captureStackTrace(this,js__$Boot_HaxeError);
 };
 $hxClasses["js._Boot.HaxeError"] = js__$Boot_HaxeError;
@@ -326,13 +513,63 @@ js_Boot.__string_rec = function(o,s) {
 		return String(o);
 	}
 };
+js_Boot.__interfLoop = function(cc,cl) {
+	if(cc == null) return false;
+	if(cc == cl) return true;
+	var intf = cc.__interfaces__;
+	if(intf != null) {
+		var _g1 = 0;
+		var _g = intf.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var i1 = intf[i];
+			if(i1 == cl || js_Boot.__interfLoop(i1,cl)) return true;
+		}
+	}
+	return js_Boot.__interfLoop(cc.__super__,cl);
+};
+js_Boot.__instanceof = function(o,cl) {
+	if(cl == null) return false;
+	switch(cl) {
+	case Int:
+		return (o|0) === o;
+	case Float:
+		return typeof(o) == "number";
+	case Bool:
+		return typeof(o) == "boolean";
+	case String:
+		return typeof(o) == "string";
+	case Array:
+		return (o instanceof Array) && o.__enum__ == null;
+	case Dynamic:
+		return true;
+	default:
+		if(o != null) {
+			if(typeof(cl) == "function") {
+				if(o instanceof cl) return true;
+				if(js_Boot.__interfLoop(js_Boot.getClass(o),cl)) return true;
+			} else if(typeof(cl) == "object" && js_Boot.__isNativeObj(cl)) {
+				if(o instanceof cl) return true;
+			}
+		} else return false;
+		if(cl == Class && o.__name__ != null) return true;
+		if(cl == Enum && o.__ename__ != null) return true;
+		return o.__enum__ == cl;
+	}
+};
+js_Boot.__cast = function(o,t) {
+	if(js_Boot.__instanceof(o,t)) return o; else throw new js__$Boot_HaxeError("Cannot cast " + Std.string(o) + " to " + Std.string(t));
+};
 js_Boot.__nativeClassName = function(o) {
 	var name = js_Boot.__toStr.call(o).slice(8,-1);
 	if(name == "Object" || name == "Function" || name == "Math" || name == "JSON") return null;
 	return name;
 };
+js_Boot.__isNativeObj = function(o) {
+	return js_Boot.__nativeClassName(o) != null;
+};
 js_Boot.__resolveNativeClass = function(name) {
-	if(typeof window != "undefined") return window[name]; else return global[name];
+	return $global[name];
 };
 var js_Browser = function() { };
 $hxClasses["js.Browser"] = js_Browser;
@@ -375,6 +612,9 @@ minject_InjectionConfig.prototype = {
 		if(parentConfig != null) return parentConfig.getResponse(injector);
 		return null;
 	}
+	,hasResponse: function(injector) {
+		return this.result != null;
+	}
 	,hasOwnResponse: function() {
 		return this.result != null;
 	}
@@ -387,7 +627,6 @@ var minject_Injector = function() {
 	this.injectionConfigs = new haxe_ds_StringMap();
 	this.injecteeDescriptions = new minject_ClassMap();
 	this.attendedToInjectees = new minject_InjecteeSet();
-	this.children = [];
 };
 $hxClasses["minject.Injector"] = minject_Injector;
 minject_Injector.__name__ = ["minject","Injector"];
@@ -400,26 +639,11 @@ minject_Injector.prototype = {
 	}
 	,getMapping: function(forClass,named) {
 		if(named == null) named = "";
-		var requestName = minject_RequestHasher.resolveRequest(forClass,named);
+		var requestName = this.getClassName(forClass) + "#" + named;
+		if(this.injectionConfigs.exists(requestName)) return this.injectionConfigs.get(requestName);
 		var config = new minject_InjectionConfig(forClass,named);
-		this.setConfig(requestName,config);
+		this.injectionConfigs.set(requestName,config);
 		return config;
-	}
-	,setConfig: function(requestName,v) {
-		this.injectionConfigs.set(requestName,v);
-		var _g1 = 0;
-		var _g = this.children.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var child = this.children[i];
-			if(!child.hasConfig(requestName)) child.setConfig(requestName,v);
-		}
-	}
-	,getConfig: function(requestName) {
-		return this.injectionConfigs.get(requestName);
-	}
-	,hasConfig: function(requestName) {
-		return this.injectionConfigs.exists(requestName);
 	}
 	,injectInto: function(target) {
 		if(this.attendedToInjectees.contains(target)) return;
@@ -448,10 +672,16 @@ minject_Injector.prototype = {
 		this.injectInto(instance);
 		return instance;
 	}
+	,hasMapping: function(forClass,named) {
+		if(named == null) named = "";
+		var mapping = this.getConfigurationForRequest(forClass,named);
+		if(mapping == null) return false;
+		return mapping.hasResponse(this);
+	}
 	,getAncestorMapping: function(forClass,named) {
 		var parent = this.parentInjector;
 		while(parent != null) {
-			var parentConfig = parent.getConfigurationForRequest(forClass,named);
+			var parentConfig = parent.getConfigurationForRequest(forClass,named,false);
 			if(parentConfig != null && parentConfig.hasOwnResponse()) return parentConfig;
 			parent = parent.parentInjector;
 		}
@@ -488,9 +718,7 @@ minject_Injector.prototype = {
 			} else if(type != null) {
 				var name;
 				if(fieldMeta.inject == null) name = null; else name = fieldMeta.inject[0];
-				var typeString = fieldMeta.type[0];
-				var klass = Type.resolveClass(typeString);
-				var point2 = new minject_point_PropertyInjectionPoint(field,klass,name);
+				var point2 = new minject_point_PropertyInjectionPoint(field,fieldMeta.type[0],name);
 				injectionPoints.push(point2);
 			}
 		}
@@ -510,9 +738,17 @@ minject_Injector.prototype = {
 		this.injecteeDescriptions.set(forClass,injecteeDescription);
 		return injecteeDescription;
 	}
-	,getConfigurationForRequest: function(forClass,named) {
-		var requestName = minject_RequestHasher.resolveRequest(forClass,named);
+	,getConfigurationForRequest: function(forClass,named,traverseAncestors) {
+		if(traverseAncestors == null) traverseAncestors = true;
+		var requestName = this.getClassName(forClass) + "#" + named;
+		if(!this.injectionConfigs.exists(requestName)) {
+			if(traverseAncestors && this.parentInjector != null && this.parentInjector.hasMapping(forClass,named)) return this.getAncestorMapping(forClass,named);
+			return null;
+		}
 		return this.injectionConfigs.get(requestName);
+	}
+	,getClassName: function(forClass) {
+		if(forClass == null) return "Dynamic"; else return Type.getClassName(forClass);
 	}
 	,getFields: function(type) {
 		var meta = { };
@@ -553,16 +789,6 @@ minject_InjecteeDescription.__name__ = ["minject","InjecteeDescription"];
 minject_InjecteeDescription.prototype = {
 	__class__: minject_InjecteeDescription
 };
-var minject_RequestHasher = function() { };
-$hxClasses["minject.RequestHasher"] = minject_RequestHasher;
-minject_RequestHasher.__name__ = ["minject","RequestHasher"];
-minject_RequestHasher.resolveRequest = function(forClass,named) {
-	if(named == null) named = "";
-	return "" + minject_RequestHasher.getClassName(forClass) + "#" + named;
-};
-minject_RequestHasher.getClassName = function(forClass) {
-	if(forClass == null) return "Dynamic"; else return Type.getClassName(forClass);
-};
 var minject_point_InjectionPoint = function() { };
 $hxClasses["minject.point.InjectionPoint"] = minject_point_InjectionPoint;
 minject_point_InjectionPoint.__name__ = ["minject","point","InjectionPoint"];
@@ -572,41 +798,25 @@ minject_point_InjectionPoint.prototype = {
 var minject_point_MethodInjectionPoint = function(name,args) {
 	this.name = name;
 	this.args = args;
-	this.makeRequestNames();
 };
 $hxClasses["minject.point.MethodInjectionPoint"] = minject_point_MethodInjectionPoint;
 minject_point_MethodInjectionPoint.__name__ = ["minject","point","MethodInjectionPoint"];
 minject_point_MethodInjectionPoint.__interfaces__ = [minject_point_InjectionPoint];
 minject_point_MethodInjectionPoint.prototype = {
-	makeRequestNames: function() {
-		this.requestNames = [];
-		var _g1 = 0;
-		var _g = this.args.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var arg = this.args[i];
-			var requestName = minject_RequestHasher.resolveRequest(Type.resolveClass(arg.type),arg.name);
-			this.requestNames.push(requestName);
-		}
-	}
-	,applyInjection: function(target,injector) {
+	applyInjection: function(target,injector) {
 		Reflect.callMethod(target,Reflect.field(target,this.name),this.gatherArgs(target,injector));
 		return target;
 	}
 	,gatherArgs: function(target,injector) {
 		var values = [];
-		var _g1 = 0;
-		var _g = this.args.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var arg = this.args[i];
+		var _g = 0;
+		var _g1 = this.args;
+		while(_g < _g1.length) {
+			var arg = _g1[_g];
+			++_g;
 			var name;
 			if(arg.name == null) name = ""; else name = arg.name;
-			var config = injector.getConfig(this.requestNames[i]);
-			if(arg.opt && config == null) {
-				values.push(null);
-				continue;
-			}
+			var config = injector.getMapping(Type.resolveClass(arg.type),arg.name);
 			var injection = config.getResponse(injector);
 			values.push(injection);
 		}
@@ -656,15 +866,15 @@ var minject_point_PropertyInjectionPoint = function(name,type,injectionName) {
 	this.name = name;
 	this.type = type;
 	this.injectionName = injectionName;
-	this.requestName = minject_RequestHasher.resolveRequest(type,injectionName);
 };
 $hxClasses["minject.point.PropertyInjectionPoint"] = minject_point_PropertyInjectionPoint;
 minject_point_PropertyInjectionPoint.__name__ = ["minject","point","PropertyInjectionPoint"];
 minject_point_PropertyInjectionPoint.__interfaces__ = [minject_point_InjectionPoint];
 minject_point_PropertyInjectionPoint.prototype = {
 	applyInjection: function(target,injector) {
-		var config = injector.getConfig(this.requestName);
-		Reflect.setProperty(target,this.name,config.getResponse(injector));
+		var injectionConfig = injector.getMapping(Type.resolveClass(this.type),this.injectionName);
+		var injection = injectionConfig.getResponse(injector);
+		Reflect.setProperty(target,this.name,injection);
 		return target;
 	}
 	,__class__: minject_point_PropertyInjectionPoint
@@ -692,6 +902,273 @@ minject_result_InjectValueResult.prototype = $extend(minject_result_InjectionRes
 	}
 	,__class__: minject_result_InjectValueResult
 });
+var msignal_Signal = function(valueClasses) {
+	if(valueClasses == null) valueClasses = [];
+	this.valueClasses = valueClasses;
+	this.slots = msignal_SlotList.NIL;
+	this.priorityBased = false;
+};
+$hxClasses["msignal.Signal"] = msignal_Signal;
+msignal_Signal.__name__ = ["msignal","Signal"];
+msignal_Signal.prototype = {
+	add: function(listener) {
+		return this.registerListener(listener);
+	}
+	,addOnce: function(listener) {
+		return this.registerListener(listener,true);
+	}
+	,addWithPriority: function(listener,priority) {
+		if(priority == null) priority = 0;
+		return this.registerListener(listener,false,priority);
+	}
+	,addOnceWithPriority: function(listener,priority) {
+		if(priority == null) priority = 0;
+		return this.registerListener(listener,true,priority);
+	}
+	,remove: function(listener) {
+		var slot = this.slots.find(listener);
+		if(slot == null) return null;
+		this.slots = this.slots.filterNot(listener);
+		return slot;
+	}
+	,removeAll: function() {
+		this.slots = msignal_SlotList.NIL;
+	}
+	,registerListener: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		if(this.registrationPossible(listener,once)) {
+			var newSlot = this.createSlot(listener,once,priority);
+			if(!this.priorityBased && priority != 0) this.priorityBased = true;
+			if(!this.priorityBased && priority == 0) this.slots = this.slots.prepend(newSlot); else this.slots = this.slots.insertWithPriority(newSlot);
+			return newSlot;
+		}
+		return this.slots.find(listener);
+	}
+	,registrationPossible: function(listener,once) {
+		if(!this.slots.nonEmpty) return true;
+		var existingSlot = this.slots.find(listener);
+		if(existingSlot == null) return true;
+		return false;
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return null;
+	}
+	,get_numListeners: function() {
+		return this.slots.get_length();
+	}
+	,__class__: msignal_Signal
+	,__properties__: {get_numListeners:"get_numListeners"}
+};
+var msignal_Signal0 = function() {
+	msignal_Signal.call(this);
+};
+$hxClasses["msignal.Signal0"] = msignal_Signal0;
+msignal_Signal0.__name__ = ["msignal","Signal0"];
+msignal_Signal0.__super__ = msignal_Signal;
+msignal_Signal0.prototype = $extend(msignal_Signal.prototype,{
+	dispatch: function() {
+		var slotsToProcess = this.slots;
+		while(slotsToProcess.nonEmpty) {
+			slotsToProcess.head.execute();
+			slotsToProcess = slotsToProcess.tail;
+		}
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return new msignal_Slot0(this,listener,once,priority);
+	}
+	,__class__: msignal_Signal0
+});
+var msignal_Signal1 = function(type) {
+	msignal_Signal.call(this,[type]);
+};
+$hxClasses["msignal.Signal1"] = msignal_Signal1;
+msignal_Signal1.__name__ = ["msignal","Signal1"];
+msignal_Signal1.__super__ = msignal_Signal;
+msignal_Signal1.prototype = $extend(msignal_Signal.prototype,{
+	dispatch: function(value) {
+		var slotsToProcess = this.slots;
+		while(slotsToProcess.nonEmpty) {
+			slotsToProcess.head.execute(value);
+			slotsToProcess = slotsToProcess.tail;
+		}
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return new msignal_Slot1(this,listener,once,priority);
+	}
+	,__class__: msignal_Signal1
+});
+var msignal_Signal2 = function(type1,type2) {
+	msignal_Signal.call(this,[type1,type2]);
+};
+$hxClasses["msignal.Signal2"] = msignal_Signal2;
+msignal_Signal2.__name__ = ["msignal","Signal2"];
+msignal_Signal2.__super__ = msignal_Signal;
+msignal_Signal2.prototype = $extend(msignal_Signal.prototype,{
+	dispatch: function(value1,value2) {
+		var slotsToProcess = this.slots;
+		while(slotsToProcess.nonEmpty) {
+			slotsToProcess.head.execute(value1,value2);
+			slotsToProcess = slotsToProcess.tail;
+		}
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return new msignal_Slot2(this,listener,once,priority);
+	}
+	,__class__: msignal_Signal2
+});
+var msignal_Slot = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	this.signal = signal;
+	this.set_listener(listener);
+	this.once = once;
+	this.priority = priority;
+	this.enabled = true;
+};
+$hxClasses["msignal.Slot"] = msignal_Slot;
+msignal_Slot.__name__ = ["msignal","Slot"];
+msignal_Slot.prototype = {
+	remove: function() {
+		this.signal.remove(this.listener);
+	}
+	,set_listener: function(value) {
+		return this.listener = value;
+	}
+	,__class__: msignal_Slot
+	,__properties__: {set_listener:"set_listener"}
+};
+var msignal_Slot0 = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	msignal_Slot.call(this,signal,listener,once,priority);
+};
+$hxClasses["msignal.Slot0"] = msignal_Slot0;
+msignal_Slot0.__name__ = ["msignal","Slot0"];
+msignal_Slot0.__super__ = msignal_Slot;
+msignal_Slot0.prototype = $extend(msignal_Slot.prototype,{
+	execute: function() {
+		if(!this.enabled) return;
+		if(this.once) this.remove();
+		this.listener();
+	}
+	,__class__: msignal_Slot0
+});
+var msignal_Slot1 = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	msignal_Slot.call(this,signal,listener,once,priority);
+};
+$hxClasses["msignal.Slot1"] = msignal_Slot1;
+msignal_Slot1.__name__ = ["msignal","Slot1"];
+msignal_Slot1.__super__ = msignal_Slot;
+msignal_Slot1.prototype = $extend(msignal_Slot.prototype,{
+	execute: function(value1) {
+		if(!this.enabled) return;
+		if(this.once) this.remove();
+		if(this.param != null) value1 = this.param;
+		this.listener(value1);
+	}
+	,__class__: msignal_Slot1
+});
+var msignal_Slot2 = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	msignal_Slot.call(this,signal,listener,once,priority);
+};
+$hxClasses["msignal.Slot2"] = msignal_Slot2;
+msignal_Slot2.__name__ = ["msignal","Slot2"];
+msignal_Slot2.__super__ = msignal_Slot;
+msignal_Slot2.prototype = $extend(msignal_Slot.prototype,{
+	execute: function(value1,value2) {
+		if(!this.enabled) return;
+		if(this.once) this.remove();
+		if(this.param1 != null) value1 = this.param1;
+		if(this.param2 != null) value2 = this.param2;
+		this.listener(value1,value2);
+	}
+	,__class__: msignal_Slot2
+});
+var msignal_SlotList = function(head,tail) {
+	this.nonEmpty = false;
+	if(head == null && tail == null) this.nonEmpty = false; else if(head == null) {
+	} else {
+		this.head = head;
+		if(tail == null) this.tail = msignal_SlotList.NIL; else this.tail = tail;
+		this.nonEmpty = true;
+	}
+};
+$hxClasses["msignal.SlotList"] = msignal_SlotList;
+msignal_SlotList.__name__ = ["msignal","SlotList"];
+msignal_SlotList.prototype = {
+	get_length: function() {
+		if(!this.nonEmpty) return 0;
+		if(this.tail == msignal_SlotList.NIL) return 1;
+		var result = 0;
+		var p = this;
+		while(p.nonEmpty) {
+			++result;
+			p = p.tail;
+		}
+		return result;
+	}
+	,prepend: function(slot) {
+		return new msignal_SlotList(slot,this);
+	}
+	,insertWithPriority: function(slot) {
+		if(!this.nonEmpty) return new msignal_SlotList(slot);
+		var priority = slot.priority;
+		if(priority >= this.head.priority) return this.prepend(slot);
+		var wholeClone = new msignal_SlotList(this.head);
+		var subClone = wholeClone;
+		var current = this.tail;
+		while(current.nonEmpty) {
+			if(priority > current.head.priority) {
+				subClone.tail = current.prepend(slot);
+				return wholeClone;
+			}
+			subClone = subClone.tail = new msignal_SlotList(current.head);
+			current = current.tail;
+		}
+		subClone.tail = new msignal_SlotList(slot);
+		return wholeClone;
+	}
+	,filterNot: function(listener) {
+		if(!this.nonEmpty || listener == null) return this;
+		if(Reflect.compareMethods(this.head.listener,listener)) return this.tail;
+		var wholeClone = new msignal_SlotList(this.head);
+		var subClone = wholeClone;
+		var current = this.tail;
+		while(current.nonEmpty) {
+			if(Reflect.compareMethods(current.head.listener,listener)) {
+				subClone.tail = current.tail;
+				return wholeClone;
+			}
+			subClone = subClone.tail = new msignal_SlotList(current.head);
+			current = current.tail;
+		}
+		return this;
+	}
+	,find: function(listener) {
+		if(!this.nonEmpty) return null;
+		var p = this;
+		while(p.nonEmpty) {
+			if(Reflect.compareMethods(p.head.listener,listener)) return p.head;
+			p = p.tail;
+		}
+		return null;
+	}
+	,__class__: msignal_SlotList
+	,__properties__: {get_length:"get_length"}
+};
 var test_TestClass = function() {
 	this.id = 0;
 };
@@ -707,9 +1184,22 @@ String.prototype.__class__ = $hxClasses.String = String;
 String.__name__ = ["String"];
 $hxClasses.Array = Array;
 Array.__name__ = ["Array"];
+Date.prototype.__class__ = $hxClasses.Date = Date;
+Date.__name__ = ["Date"];
+var Int = $hxClasses.Int = { __name__ : ["Int"]};
+var Dynamic = $hxClasses.Dynamic = { __name__ : ["Dynamic"]};
+var Float = $hxClasses.Float = Number;
+Float.__name__ = ["Float"];
+var Bool = Boolean;
+Bool.__ename__ = ["Bool"];
+var Class = $hxClasses.Class = { __name__ : ["Class"]};
+var Enum = { };
 var __map_reserved = {}
+msignal_SlotList.NIL = new msignal_SlotList(null,null);
+controller_AjaxTestController.__meta__ = { fields : { _ : { args : [{ type : "test.TestClass", opt : false},{ type : "controller.SignalController", opt : false}], inject : null}}};
+controller_AppController.__meta__ = { fields : { _ : { args : [{ type : "test.TestClass", opt : false},{ type : "controller.SignalController", opt : false}], inject : null}}};
 haxe_IMap.__meta__ = { obj : { 'interface' : null}};
 js_Boot.__toStr = {}.toString;
 minject_point_InjectionPoint.__meta__ = { obj : { 'interface' : null}};
 Main.main();
-})(typeof console != "undefined" ? console : {log:function(){}});
+})(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

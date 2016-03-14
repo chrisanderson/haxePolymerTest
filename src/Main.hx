@@ -1,5 +1,8 @@
 package;
 
+import haxe.ds.StringMap;
+import haxe.ds.ObjectMap;
+import externs.MyElement;
 import controller.*;
 import externs.*;
 import haxe.Timer;
@@ -180,18 +183,27 @@ class Main
 		//var selectTest:SelectElement = cast untyped __js__('window.document.querySelector("#test36").$.selectTest');//fix here works but want to tap MyElement for this
 		//var selectTest:SelectElement = cast tempStaticShadowDomNodeList.selectTest;//works but tempStaticShadowDomNodeList is dynamic
 		//var selectTest:SelectElement = cast myElementDomTest.getShadowDomElement('#selectTest33');//works but dev has to know the elements available in the shadow dom
-		//var selectTest:SelectElement = cast tempStaticShadowDomNodeList.selectTest;
 		var selectTest:SelectElement = cast tempStaticShadowDomNodeList.get('selectTest');//works but dev has to know the elements available in the shadow dom
+		//var selectTest:SelectElement = cast tempStaticShadowDomNodeList.get(myElementDomTest.selectTest);
 		//var selectTest:SelectElement = cast tempStaticShadowDomNodeList['selectTest'];
 		//var selectTest:SelectElement = myElementDomTest.get_selectTest();//works
-		
+
+    //cast untyped __js__("{0}.$", polymerElementInstance)
+    var testBump:ObjectMap<{}, Dynamic> = cast untyped __js__("{0}.$", myElementDomTest);
+    //var testBump:StringMap<Element> = cast untyped __js__("{0}.$", myElementDomTest);
+    Browser.window.console.log('testBump:', testBump);
+    //Browser.window.console.log('testBump.selectTest:', testBump.get(selectTest));
+    //Browser.window.console.log('myElementDomTest.selectTest:', myElementDomTest.selectTest);
+
+    //var selectTest:SelectElement = cast untyped __js__("{0}.$.{1}", myElementDomTest, selectTest);//works but ugly
+
 		selectTest.addEventListener('change', function(event)
 		{
 			//Browser.window.console.log('onSelectTestChange() event: ', event);
-			
+
 			var tempOptionCollection:Array<OptionElement> = cast selectTest.options;
 			var tempSelectedOption:OptionElement = null;
-			
+
 			for(tempOption in tempOptionCollection)
 			{
 				if(tempOption.selected)
@@ -199,15 +211,15 @@ class Main
 					tempSelectedOption = cast tempOption;
 				}
 			}
-			
+
 			//Browser.window.console.log('onSelectTestChange() tempSelectedOption: ', tempSelectedOption);
 			//Browser.window.console.log('onSelectTestChange() tempSelectedOption.value: ', tempSelectedOption.value);
-			
+
 			myElementDomTest.boundText3 = 'test' + tempSelectedOption.value;
 		});
 		
 		//testing code completion macros
-		trace('test33 macro test: ' + DomElementHelper.index__html);
+		//trace('test33 macro test: ' + DomElementHelper.index__html);
 		
 		//testing overriding extern methods
 		//myElementDomTest.currentDateChanged = function(value)

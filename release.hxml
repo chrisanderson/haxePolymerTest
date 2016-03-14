@@ -3,4 +3,7 @@ common.hxml
 -js bin/release/polymerTest.js
 --no-traces
 
--cmd copy "bin\release\polymerTest.js" "bin\lib\polymerTest.js"
+-cmd rm -rfv bin/*.js
+-cmd ditto bin/release bin
+
+#-cmd copy "bin\release\polymerTest.js" "bin\lib\polymerTest.js"

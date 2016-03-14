@@ -1,9 +1,13 @@
 common.hxml
 
--js bin/debug/polymerTest.js
-
 -debug
 -D source-map-content
 
--cmd copy "bin\debug\polymerTest.js" "bin\lib\polymerTest.js"
--cmd copy "bin\debug\polymerTest.js.map" "bin\lib\polymerTest.js.map"
+-js bin/debug/polymerTest.js
+
+-cmd rm -rfv bin/*.js
+-cmd rm -rfv bin/*.map
+-cmd ditto bin/debug bin
+
+#-cmd copy "bin\debug\polymerTest.js" "bin\lib\polymerTest.js"
+#-cmd copy "bin\debug\polymerTest.js.map" "bin\lib\polymerTest.js.map"

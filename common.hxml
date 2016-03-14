@@ -23,6 +23,7 @@
 #-D bindx_compatibility
 #-D noEmbedJS
 #-D js-flatten
+#-D dump=pretty
 #--display
 --times
 

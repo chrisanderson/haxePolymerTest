@@ -23,13 +23,6 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
-HxOverrides.iter = function(a) {
-	return { cur : 0, arr : a, hasNext : function() {
-		return this.cur < this.arr.length;
-	}, next : function() {
-		return this.arr[this.cur++];
-	}};
-};
 var Main = function() {
 	this.app = window.document.querySelector("#app");
 	window.addEventListener("polymer-ready",$bind(this,this.onPolymerReady));
@@ -81,7 +74,10 @@ Main.prototype = {
 		tempTest32NestedContent.myElementDeclarativeMessage = myNestedElement.declarativeMessage;
 		var tempStaticShadowDomNodeList = helper_PolymerElementHelper.getStaticShadowDomNodeList(myElementDomTest);
 		window.console.log("tempStaticShadowDomNodeList: ",tempStaticShadowDomNodeList);
-		var selectTest = tempStaticShadowDomNodeList.h["selectTest".__id__];
+		var selectTest;
+		selectTest = __map_reserved.selectTest != null?tempStaticShadowDomNodeList.getReserved("selectTest"):tempStaticShadowDomNodeList.h["selectTest"];
+		var testBump = myElementDomTest.$;
+		window.console.log("testBump:",testBump);
 		selectTest.addEventListener("change",function(event) {
 			var tempOptionCollection = selectTest.options;
 			var tempSelectedOption = null;
@@ -93,7 +89,6 @@ Main.prototype = {
 			}
 			myElementDomTest.boundText3 = "test" + tempSelectedOption.value;
 		});
-		console.log("test33 macro test: " + "index.html");
 		var testTemplate = window.document.querySelector("#testTemplate");
 		console.log({ 'testTemplate' : testTemplate});
 	}
@@ -138,11 +133,6 @@ Reflect.compareMethods = function(f1,f2) {
 	if(f1 == f2) return true;
 	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
 	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
-};
-Reflect.deleteField = function(o,field) {
-	if(!Object.prototype.hasOwnProperty.call(o,field)) return false;
-	delete(o[field]);
-	return true;
 };
 var Std = function() { };
 $hxClasses["Std"] = Std;
@@ -387,9 +377,6 @@ controller_SignalController.__name__ = ["controller","SignalController"];
 controller_SignalController.prototype = {
 	__class__: controller_SignalController
 };
-var events_Events = function() { };
-$hxClasses["events.Events"] = events_Events;
-events_Events.__name__ = ["events","Events"];
 var haxe_IMap = function() { };
 $hxClasses["haxe.IMap"] = haxe_IMap;
 haxe_IMap.__name__ = ["haxe","IMap"];
@@ -397,47 +384,6 @@ var haxe_ds_ObjectMap = function() { };
 $hxClasses["haxe.ds.ObjectMap"] = haxe_ds_ObjectMap;
 haxe_ds_ObjectMap.__name__ = ["haxe","ds","ObjectMap"];
 haxe_ds_ObjectMap.__interfaces__ = [haxe_IMap];
-haxe_ds_ObjectMap.prototype = {
-	keys: function() {
-		var a = [];
-		for( var key in this.h.__keys__ ) {
-		if(this.h.hasOwnProperty(key)) a.push(this.h.__keys__[key]);
-		}
-		return HxOverrides.iter(a);
-	}
-	,toString: function() {
-		var s_b = "";
-		s_b += "{";
-		var it = this.keys();
-		while( it.hasNext() ) {
-			var i = it.next();
-			s_b += Std.string(Std.string(i));
-			s_b += " => ";
-			s_b += Std.string(Std.string(this.h[i.__id__]));
-			if(it.hasNext()) s_b += ", ";
-		}
-		s_b += "}";
-		return s_b;
-	}
-	,__class__: haxe_ds_ObjectMap
-};
-var haxe_ds__$StringMap_StringMapIterator = function(map,keys) {
-	this.map = map;
-	this.keys = keys;
-	this.index = 0;
-	this.count = keys.length;
-};
-$hxClasses["haxe.ds._StringMap.StringMapIterator"] = haxe_ds__$StringMap_StringMapIterator;
-haxe_ds__$StringMap_StringMapIterator.__name__ = ["haxe","ds","_StringMap","StringMapIterator"];
-haxe_ds__$StringMap_StringMapIterator.prototype = {
-	hasNext: function() {
-		return this.index < this.count;
-	}
-	,next: function() {
-		return this.map.get(this.keys[this.index++]);
-	}
-	,__class__: haxe_ds__$StringMap_StringMapIterator
-};
 var haxe_ds_StringMap = function() {
 	this.h = { };
 };
@@ -467,22 +413,6 @@ haxe_ds_StringMap.prototype = {
 		if(this.rh == null) return false;
 		return this.rh.hasOwnProperty("$" + key);
 	}
-	,remove: function(key) {
-		if(__map_reserved[key] != null) {
-			key = "$" + key;
-			if(this.rh == null || !this.rh.hasOwnProperty(key)) return false;
-			delete(this.rh[key]);
-			return true;
-		} else {
-			if(!this.h.hasOwnProperty(key)) return false;
-			delete(this.h[key]);
-			return true;
-		}
-	}
-	,keys: function() {
-		var _this = this.arrayKeys();
-		return HxOverrides.iter(_this);
-	}
 	,arrayKeys: function() {
 		var out = [];
 		for( var key in this.h ) {
@@ -494,9 +424,6 @@ haxe_ds_StringMap.prototype = {
 			}
 		}
 		return out;
-	}
-	,iterator: function() {
-		return new haxe_ds__$StringMap_StringMapIterator(this,this.arrayKeys());
 	}
 	,toString: function() {
 		var s = new StringBuf();
@@ -531,15 +458,9 @@ haxe_rtti_Meta.getFields = function(t) {
 	var meta = haxe_rtti_Meta.getMeta(t);
 	if(meta == null || meta.fields == null) return { }; else return meta.fields;
 };
-var helper_DomElementHelper = function() { };
-$hxClasses["helper.DomElementHelper"] = helper_DomElementHelper;
-helper_DomElementHelper.__name__ = ["helper","DomElementHelper"];
 var helper_DomHelper = function() { };
 $hxClasses["helper.DomHelper"] = helper_DomHelper;
 helper_DomHelper.__name__ = ["helper","DomHelper"];
-helper_DomHelper.getDomInstance = function(polymerElementClass,elementId) {
-	return window.document.querySelector(elementId);
-};
 helper_DomHelper.stripDataBindingCharacters = function(string,startCharacters,endCharacters) {
 	if(endCharacters == null) endCharacters = "}";
 	if(startCharacters == null) startCharacters = "{";
@@ -557,17 +478,27 @@ $hxClasses["helper.PolymerElementHelper"] = helper_PolymerElementHelper;
 helper_PolymerElementHelper.__name__ = ["helper","PolymerElementHelper"];
 helper_PolymerElementHelper.getStaticShadowDomNodeList = function(polymerElementInstance) {
 	var tempNodeList = polymerElementInstance.$;
-	return tempNodeList;
+	window.console.log("test33 typeof: ",Type["typeof"](tempNodeList));
+	window.console.log("test33 tempNodeList: ",tempNodeList);
+	var tempElementsWithIdList = polymerElementInstance.shadowRoot.querySelectorAll("[id]");
+	window.console.log("tempElementsWithIdList:",tempElementsWithIdList);
+	var tempResult = new haxe_ds_StringMap();
+	var _g = 0;
+	while(_g < tempElementsWithIdList.length) {
+		var tempProp = tempElementsWithIdList[_g];
+		++_g;
+		var tempElement = tempProp;
+		var tempElementId = tempElement.id;
+		tempResult.set(tempElementId,tempProp);
+	}
+	window.console.warn("getStaticShadowDomNodeList() tempResult: ",tempResult);
+	return tempResult;
 };
 helper_PolymerElementHelper.getShadowDomElementById = function(polymerElementInstance,elementId) {
 	var tempStaticShadowDomNodeList = helper_PolymerElementHelper.getStaticShadowDomNodeList(polymerElementInstance);
-	var tempResult = tempStaticShadowDomNodeList.h[elementId.__id__];
-	if(tempResult != null) return tempResult; else throw new js__$Boot_HaxeError("Element with id: " + elementId + " wasn't found in " + Std.string(tempStaticShadowDomNodeList) + ".");
-};
-helper_PolymerElementHelper.getShadowDomElement = function(polymerElementInstance,shadowDomElementId) {
 	var tempResult;
-	tempResult = js_Boot.__cast(polymerElementInstance.shadowRoot.querySelector(shadowDomElementId) , HTMLElement);
-	if(tempResult != null) return tempResult; else throw new js__$Boot_HaxeError("Element with id: " + shadowDomElementId + " wasn't found in " + polymerElementInstance.localName + ".shadowRoot.");
+	tempResult = __map_reserved[elementId] != null?tempStaticShadowDomNodeList.getReserved(elementId):tempStaticShadowDomNodeList.h[elementId];
+	if(tempResult != null) return tempResult; else throw new js__$Boot_HaxeError("Element with id: " + elementId + " wasn't found in " + Std.string(tempStaticShadowDomNodeList) + ".");
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -744,36 +675,6 @@ minject_ClassMap.prototype = {
 		var key = Type.getClassName(k);
 		return this.map.exists(key);
 	}
-	,remove: function(k) {
-		var key = Type.getClassName(k);
-		return this.map.remove(key);
-	}
-	,keys: function() {
-		return (function($this) {
-			var $r;
-			var _this;
-			{
-				var _g = [];
-				var $it0 = $this.map.keys();
-				while( $it0.hasNext() ) {
-					var k = $it0.next();
-					_g.push(Type.resolveClass(k));
-				}
-				_this = _g;
-			}
-			$r = HxOverrides.iter(_this);
-			return $r;
-		}(this));
-	}
-	,iterator: function() {
-		return this.map.iterator();
-	}
-	,toString: function() {
-		return this.map.toString();
-	}
-	,getKey: function(k) {
-		return Type.getClassName(k);
-	}
 	,__class__: minject_ClassMap
 };
 var minject_InjectionConfig = function(request,injectionName) {
@@ -800,9 +701,6 @@ minject_InjectionConfig.prototype = {
 		if(this.result != null && result != null) console.log("Warning: Injector contains " + this.toString() + ".\nAttempting to overwrite this " + ("with mapping for [" + result.toString() + "].\nIf you have overwritten this mapping ") + "intentionally you can use `injector.unmap()` prior to your replacement mapping " + "in order to avoid seeing this message.");
 		this.result = result;
 	}
-	,setInjector: function(injector) {
-		this.injector = injector;
-	}
 	,toString: function() {
 		var named;
 		if(this.injectionName != null && this.injectionName != "") named = " named \"" + this.injectionName + "\" and"; else named = "";
@@ -823,28 +721,6 @@ minject_Injector.prototype = {
 		var config = this.getMapping(whenAskedFor,named);
 		config.setResult(new minject_result_InjectValueResult(useValue));
 		return config;
-	}
-	,mapClass: function(whenAskedFor,instantiateClass,named) {
-		if(named == null) named = "";
-		var config = this.getMapping(whenAskedFor,named);
-		config.setResult(new minject_result_InjectClassResult(instantiateClass));
-		return config;
-	}
-	,mapSingleton: function(whenAskedFor,named) {
-		if(named == null) named = "";
-		return this.mapSingletonOf(whenAskedFor,whenAskedFor,named);
-	}
-	,mapSingletonOf: function(whenAskedFor,useSingletonOf,named) {
-		if(named == null) named = "";
-		var config = this.getMapping(whenAskedFor,named);
-		config.setResult(new minject_result_InjectSingletonResult(useSingletonOf));
-		return config;
-	}
-	,mapRule: function(whenAskedFor,useRule,named) {
-		if(named == null) named = "";
-		var config = this.getMapping(whenAskedFor,named);
-		config.setResult(new minject_result_InjectOtherRuleResult(useRule));
-		return useRule;
 	}
 	,getMapping: function(forClass,named) {
 		if(named == null) named = "";
@@ -881,28 +757,11 @@ minject_Injector.prototype = {
 		this.injectInto(instance);
 		return instance;
 	}
-	,unmap: function(theClass,named) {
-		if(named == null) named = "";
-		var mapping = this.getConfigurationForRequest(theClass,named);
-		if(mapping == null) throw new js__$Boot_HaxeError("Error while removing an injector mapping: No mapping defined for class " + this.getClassName(theClass) + ", named \"" + named + "\"");
-		mapping.setResult(null);
-	}
 	,hasMapping: function(forClass,named) {
 		if(named == null) named = "";
 		var mapping = this.getConfigurationForRequest(forClass,named);
 		if(mapping == null) return false;
 		return mapping.hasResponse(this);
-	}
-	,getInstance: function(ofClass,named) {
-		if(named == null) named = "";
-		var mapping = this.getConfigurationForRequest(ofClass,named);
-		if(mapping == null || !mapping.hasResponse(this)) throw new js__$Boot_HaxeError("Error while getting mapping response: No mapping defined for class " + this.getClassName(ofClass) + ", named \"" + named + "\"");
-		return mapping.getResponse(this);
-	}
-	,createChildInjector: function() {
-		var injector = new minject_Injector();
-		injector.set_parentInjector(this);
-		return injector;
 	}
 	,getAncestorMapping: function(forClass,named) {
 		var parent = this.parentInjector;
@@ -974,12 +833,6 @@ minject_Injector.prototype = {
 		}
 		return this.injectionConfigs.get(requestName);
 	}
-	,set_parentInjector: function(value) {
-		if(this.parentInjector != null && value == null) this.attendedToInjectees = new minject_InjecteeSet();
-		this.parentInjector = value;
-		if(this.parentInjector != null) this.attendedToInjectees = this.parentInjector.attendedToInjectees;
-		return this.parentInjector;
-	}
 	,getClassName: function(forClass) {
 		if(forClass == null) return "Dynamic"; else return Type.getClassName(forClass);
 	}
@@ -999,7 +852,6 @@ minject_Injector.prototype = {
 		return meta;
 	}
 	,__class__: minject_Injector
-	,__properties__: {set_parentInjector:"set_parentInjector"}
 };
 var minject_InjecteeSet = function() {
 };
@@ -1011,15 +863,6 @@ minject_InjecteeSet.prototype = {
 	}
 	,contains: function(value) {
 		return value.__injected__ == true;
-	}
-	,remove: function(value) {
-		Reflect.deleteField(value,"__injected__");
-	}
-	,'delete': function(value) {
-		this.remove(value);
-	}
-	,iterator: function() {
-		return HxOverrides.iter([]);
 	}
 	,__class__: minject_InjecteeSet
 };
@@ -1147,61 +990,6 @@ minject_result_InjectionResult.prototype = {
 	}
 	,__class__: minject_result_InjectionResult
 };
-var minject_result_InjectClassResult = function(responseType) {
-	minject_result_InjectionResult.call(this);
-	this.responseType = responseType;
-};
-$hxClasses["minject.result.InjectClassResult"] = minject_result_InjectClassResult;
-minject_result_InjectClassResult.__name__ = ["minject","result","InjectClassResult"];
-minject_result_InjectClassResult.__super__ = minject_result_InjectionResult;
-minject_result_InjectClassResult.prototype = $extend(minject_result_InjectionResult.prototype,{
-	getResponse: function(injector) {
-		return injector.instantiate(this.responseType);
-	}
-	,toString: function() {
-		return "class " + Type.getClassName(this.responseType);
-	}
-	,__class__: minject_result_InjectClassResult
-});
-var minject_result_InjectOtherRuleResult = function(rule) {
-	minject_result_InjectionResult.call(this);
-	this.rule = rule;
-};
-$hxClasses["minject.result.InjectOtherRuleResult"] = minject_result_InjectOtherRuleResult;
-minject_result_InjectOtherRuleResult.__name__ = ["minject","result","InjectOtherRuleResult"];
-minject_result_InjectOtherRuleResult.__super__ = minject_result_InjectionResult;
-minject_result_InjectOtherRuleResult.prototype = $extend(minject_result_InjectionResult.prototype,{
-	getResponse: function(injector) {
-		return this.rule.getResponse(injector);
-	}
-	,toString: function() {
-		return this.rule.toString();
-	}
-	,__class__: minject_result_InjectOtherRuleResult
-});
-var minject_result_InjectSingletonResult = function(responseType) {
-	minject_result_InjectionResult.call(this);
-	this.responseType = responseType;
-};
-$hxClasses["minject.result.InjectSingletonResult"] = minject_result_InjectSingletonResult;
-minject_result_InjectSingletonResult.__name__ = ["minject","result","InjectSingletonResult"];
-minject_result_InjectSingletonResult.__super__ = minject_result_InjectionResult;
-minject_result_InjectSingletonResult.prototype = $extend(minject_result_InjectionResult.prototype,{
-	getResponse: function(injector) {
-		if(this.response == null) {
-			this.response = this.createResponse(injector);
-			injector.injectInto(this.response);
-		}
-		return this.response;
-	}
-	,createResponse: function(injector) {
-		return injector.construct(this.responseType);
-	}
-	,toString: function() {
-		return "singleton " + Type.getClassName(this.responseType);
-	}
-	,__class__: minject_result_InjectSingletonResult
-});
 var minject_result_InjectValueResult = function(value) {
 	minject_result_InjectionResult.call(this);
 	this.value = value;
@@ -1443,20 +1231,6 @@ msignal_SlotList.prototype = {
 	,prepend: function(slot) {
 		return new msignal_SlotList(slot,this);
 	}
-	,append: function(slot) {
-		if(slot == null) return this;
-		if(!this.nonEmpty) return new msignal_SlotList(slot);
-		if(this.tail == msignal_SlotList.NIL) return new msignal_SlotList(slot).prepend(this.head);
-		var wholeClone = new msignal_SlotList(this.head);
-		var subClone = wholeClone;
-		var current = this.tail;
-		while(current.nonEmpty) {
-			subClone = subClone.tail = new msignal_SlotList(current.head);
-			current = current.tail;
-		}
-		subClone.tail = new msignal_SlotList(slot);
-		return wholeClone;
-	}
 	,insertWithPriority: function(slot) {
 		if(!this.nonEmpty) return new msignal_SlotList(slot);
 		var priority = slot.priority;
@@ -1491,15 +1265,6 @@ msignal_SlotList.prototype = {
 		}
 		return this;
 	}
-	,contains: function(listener) {
-		if(!this.nonEmpty) return false;
-		var p = this;
-		while(p.nonEmpty) {
-			if(Reflect.compareMethods(p.head.listener,listener)) return true;
-			p = p.tail;
-		}
-		return false;
-	}
 	,find: function(listener) {
 		if(!this.nonEmpty) return null;
 		var p = this;
@@ -1512,9 +1277,6 @@ msignal_SlotList.prototype = {
 	,__class__: msignal_SlotList
 	,__properties__: {get_length:"get_length"}
 };
-var polymer_PolymerEvents = function() { };
-$hxClasses["polymer.PolymerEvents"] = polymer_PolymerEvents;
-polymer_PolymerEvents.__name__ = ["polymer","PolymerEvents"];
 var test_TestClass = function() {
 	this.id = 0;
 };
@@ -1524,15 +1286,7 @@ test_TestClass.prototype = {
 	toString: function() {
 		return "TestClass id: " + this.id;
 	}
-	,get_gridData: function() {
-		return this._gridData;
-	}
-	,set_gridData: function(value) {
-		console.log({ 'set_gridData value' : value});
-		return value;
-	}
 	,__class__: test_TestClass
-	,__properties__: {set_gridData:"set_gridData",get_gridData:"get_gridData"}
 };
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
@@ -1555,14 +1309,9 @@ var __map_reserved = {}
 msignal_SlotList.NIL = new msignal_SlotList(null,null);
 controller_AjaxTestController.__meta__ = { fields : { _ : { args : [{ type : "test.TestClass", opt : false},{ type : "controller.SignalController", opt : false}], inject : null}}};
 controller_AppController.__meta__ = { fields : { _ : { args : [{ type : "test.TestClass", opt : false},{ type : "controller.SignalController", opt : false}], inject : null}}};
-events_Events.GRID_DATA_READY = "grid-data-ready";
 haxe_IMap.__meta__ = { obj : { 'interface' : null}};
-helper_DomElementHelper.index__html = "index.html";
 js_Boot.__toStr = {}.toString;
 minject_point_InjectionPoint.__meta__ = { obj : { 'interface' : null}};
-polymer_PolymerEvents.POLYMER_READY = "polymer-ready";
-polymer_PolymerEvents.POLYMER_RESPONSE = "polymer-response";
-polymer_PolymerEvents.WEB_COMPONENTS_READY = "WebComponentsReady";
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
 
